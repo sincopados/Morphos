@@ -600,7 +600,20 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      bootstrap_company: {
+        Args: {
+          p_business_need: string[]
+          p_city: string
+          p_company_name: string
+          p_country: string
+          p_industry_category: string
+          p_industry_other_note: string
+          p_owner_full_name: string
+          p_referred_by_code: string
+          p_region: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
