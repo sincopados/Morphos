@@ -29,6 +29,9 @@ export default defineNuxtConfig({
   },
 
   i18n: {
+    // Necesario para que los enlaces SEO (canonical/alternate) salgan con
+    // dominio absoluto. En produccion se define via NUXT_PUBLIC_SITE_URL.
+    baseUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000',
     defaultLocale: 'es',
     locales: [
       { code: 'es', language: 'es-ES', name: 'Español', file: 'es.json' },
