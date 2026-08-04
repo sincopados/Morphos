@@ -30,10 +30,15 @@
       "checkEmailBody": "Te enviamos un enlace de confirmación a {email}. Ábrelo para activar tu cuenta."
     },
     "fields": {
+      "companyName": "Nombre de la empresa",
+      "companyNamePlaceholder": "SmartPainting",
       "email": "Correo",
       "emailPlaceholder": "tu{'@'}empresa.com",
       "password": "Contraseña",
-      "passwordPlaceholder": "Mínimo 8 caracteres"
+      "passwordPlaceholder": "Mínimo 8 caracteres",
+      "referralCode": "Código de referido",
+      "referralCodePlaceholder": "Si alguien te invitó",
+      "optional": "Opcional"
     },
     "google": "Continuar con Google",
     "googleDisabled": "Google todavía no está habilitado en este proyecto.",
@@ -45,6 +50,7 @@
       "backToLogin": "Volver a iniciar sesión"
     },
     "validation": {
+      "companyName": "Escribe el nombre de tu empresa.",
       "email": "Escribe un correo válido.",
       "passwordMin": "La contraseña debe tener al menos 8 caracteres."
     },

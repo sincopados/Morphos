@@ -8,6 +8,12 @@ interface SupabaseAuthError {
   message: string
 }
 
+/** Datos de la Pantalla 1 del onboarding que se capturan junto al alta. */
+export interface SignupDraft {
+  companyName?: string
+  referredByCode?: string
+}
+
 /**
  * Supabase devuelve sus errores en ingles y sin traducir. Mapeamos los codigos
  * que un usuario puede provocar de verdad; el resto cae en un mensaje generico
@@ -62,8 +68,18 @@ export function useAuthActions() {
   /**
    * Devuelve true cuando el alta quedo pendiente de confirmar por correo, para
    * que la pagina muestre el aviso en vez de asumir que ya hay sesion.
+   *
+   * `signupDraft` viaja en el user_metadata porque el alta por correo saca al
+   * usuario de la app y cualquier estado en memoria se pierde. Es solo para
+   * prellenar el onboarding: el usuario puede editarlo a voluntad, asi que
+   * nunca debe usarse como fuente de verdad ni para decisiones de permisos.
+   * `bootstrap_company` sigue recibiendo cada valor explicitamente.
    */
-  async function signUpWithPassword(email: string, password: string): Promise<boolean> {
+  async function signUpWithPassword(
+    email: string,
+    password: string,
+    signupDraft: SignupDraft = {}
+  ): Promise<boolean> {
     pending.value = true
     errorMessage.value = null
 
@@ -71,7 +87,11 @@ export function useAuthActions() {
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}${localePath('/confirm')}`
+        emailRedirectTo: `${window.location.origin}${localePath('/confirm')}`,
+        data: {
+          company_name: signupDraft.companyName || null,
+          referred_by_code: signupDraft.referredByCode || null
+        }
       }
     })
 

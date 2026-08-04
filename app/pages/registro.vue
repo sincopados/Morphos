@@ -9,18 +9,28 @@ const { googleAuthEnabled } = useRuntimeConfig().public
 const { pending, errorMessage, signUpWithPassword, signInWithGoogle } = useAuthActions()
 
 const schema = computed(() => z.object({
+  companyName: z.string().min(2, t('auth.validation.companyName')),
   email: z.string().email(t('auth.validation.email')),
-  password: z.string().min(8, t('auth.validation.passwordMin'))
+  password: z.string().min(8, t('auth.validation.passwordMin')),
+  referredByCode: z.string().optional()
 }))
 
-const state = reactive({ email: '', password: '' })
+const state = reactive({
+  companyName: '',
+  email: '',
+  password: '',
+  referredByCode: ''
+})
 
 // Con confirmacion por correo activada el alta no abre sesion: hay que
 // decirle al usuario que vaya a su bandeja en vez de dejarlo esperando.
 const awaitingConfirmation = ref(false)
 
 async function onSubmit() {
-  awaitingConfirmation.value = await signUpWithPassword(state.email, state.password)
+  awaitingConfirmation.value = await signUpWithPassword(state.email, state.password, {
+    companyName: state.companyName,
+    referredByCode: state.referredByCode
+  })
 }
 
 useSeoMeta({ title: () => `${t('auth.register.title')} · ${t('app.name')}` })
@@ -93,6 +103,19 @@ useSeoMeta({ title: () => `${t('auth.register.title')} · ${t('app.name')}` })
       @submit="onSubmit"
     >
       <UFormField
+        name="companyName"
+        :label="$t('auth.fields.companyName')"
+        required
+      >
+        <UInput
+          v-model="state.companyName"
+          autocomplete="organization"
+          :placeholder="$t('auth.fields.companyNamePlaceholder')"
+          class="w-full"
+        />
+      </UFormField>
+
+      <UFormField
         name="email"
         :label="$t('auth.fields.email')"
         required
@@ -116,6 +139,18 @@ useSeoMeta({ title: () => `${t('auth.register.title')} · ${t('app.name')}` })
           type="password"
           autocomplete="new-password"
           :placeholder="$t('auth.fields.passwordPlaceholder')"
+          class="w-full"
+        />
+      </UFormField>
+
+      <UFormField
+        name="referredByCode"
+        :label="$t('auth.fields.referralCode')"
+        :hint="$t('auth.fields.optional')"
+      >
+        <UInput
+          v-model="state.referredByCode"
+          :placeholder="$t('auth.fields.referralCodePlaceholder')"
           class="w-full"
         />
       </UFormField>
