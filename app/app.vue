@@ -1,16 +1,21 @@
-<script setup>
-const { t, locale } = useI18n()
-const head = useLocaleHead()
+<script setup lang="ts">
+const { t } = useI18n()
 
-useHead({
-  htmlAttrs: computed(() => head.value.htmlAttrs),
-  meta: [
-    { name: 'viewport', content: 'width=device-width, initial-scale=1' }
-  ],
+// `seo: true` agrega tambien los canonical y hreflang absolutos, que dependen
+// del baseUrl configurado en nuxt.config.
+const i18nHead = useLocaleHead({ seo: true })
+
+useHead(() => ({
+  htmlAttrs: i18nHead.value.htmlAttrs,
   link: [
-    { rel: 'icon', href: '/favicon.ico' }
+    { rel: 'icon', href: '/favicon.ico' },
+    ...i18nHead.value.link ?? []
+  ],
+  meta: [
+    { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+    ...i18nHead.value.meta ?? []
   ]
-})
+}))
 
 useSeoMeta({
   title: () => t('home.title'),
@@ -23,37 +28,8 @@ useSeoMeta({
 
 <template>
   <UApp>
-    <UHeader>
-      <template #left>
-        <NuxtLink to="/">
-          <AppLogo class="w-auto h-6 shrink-0" />
-        </NuxtLink>
-      </template>
-
-      <template #right>
-        <UButton
-          :label="locale === 'es' ? 'EN' : 'ES'"
-          color="neutral"
-          variant="ghost"
-          @click="locale = locale === 'es' ? 'en' : 'es'"
-        />
-
-        <UColorModeButton />
-      </template>
-    </UHeader>
-
-    <UMain>
+    <NuxtLayout>
       <NuxtPage />
-    </UMain>
-
-    <USeparator icon="i-simple-icons-nuxtdotjs" />
-
-    <UFooter>
-      <template #left>
-        <p class="text-sm text-muted">
-          MORPHOS • © {{ new Date().getFullYear() }}
-        </p>
-      </template>
-    </UFooter>
+    </NuxtLayout>
   </UApp>
 </template>

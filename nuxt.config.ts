@@ -13,6 +13,15 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/main.css'],
 
+  runtimeConfig: {
+    public: {
+      // El boton de Google solo se muestra cuando el proveedor esta habilitado
+      // en el dashboard de Supabase; si no, `signInWithOAuth` manda al usuario
+      // a una pagina de error del propio Supabase.
+      googleAuthEnabled: false
+    }
+  },
+
   routeRules: {
     '/': { prerender: true }
   },
@@ -44,7 +53,19 @@ export default defineNuxtConfig({
     redirectOptions: {
       login: '/login',
       callback: '/confirm',
-      exclude: ['/*']
+      // El guard compara `to.path` exacto contra estos patrones, y `login` y
+      // `callback` ya quedan excluidos por su cuenta. Como i18n usa
+      // `prefix_except_default`, cada ruta publica necesita tambien su
+      // variante con prefijo: un patron amplio como `/en/*` dejaria sin
+      // proteger toda la app en ingles.
+      exclude: [
+        '/',
+        '/registro',
+        '/en',
+        '/en/login',
+        '/en/registro',
+        '/en/confirm'
+      ]
     }
   }
 })

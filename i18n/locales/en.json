@@ -1,9 +1,61 @@
 {
   "app": {
-    "name": "MORPHOS"
+    "name": "MORPHOS",
+    "tagline": "Build. Automate. Scale."
   },
   "home": {
     "title": "MORPHOS",
     "description": "Balance and confirmation engine for workforce, sales, and affiliates."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "signedInAs": "Signed in as {email}",
+    "placeholder": "Nothing here yet — onboarding and the pending-approvals inbox land in the next milestone."
+  },
+  "auth": {
+    "login": {
+      "title": "Sign in",
+      "description": "Access your MORPHOS account.",
+      "submit": "Sign in",
+      "noAccount": "Don't have an account yet?",
+      "createAccount": "Create account"
+    },
+    "register": {
+      "title": "Create your account",
+      "description": "Start managing your team, your sales, and your affiliates.",
+      "submit": "Create account",
+      "hasAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "checkEmailTitle": "Check your email",
+      "checkEmailBody": "We sent a confirmation link to {email}. Open it to activate your account."
+    },
+    "fields": {
+      "email": "Email",
+      "emailPlaceholder": "you{'@'}company.com",
+      "password": "Password",
+      "passwordPlaceholder": "At least 8 characters"
+    },
+    "google": "Continue with Google",
+    "googleDisabled": "Google is not enabled on this project yet.",
+    "separator": "or",
+    "signOut": "Sign out",
+    "confirm": {
+      "verifying": "Confirming your session…",
+      "failed": "We couldn't confirm your session. Try signing in again.",
+      "backToLogin": "Back to sign in"
+    },
+    "validation": {
+      "email": "Enter a valid email address.",
+      "passwordMin": "Password must be at least 8 characters."
+    },
+    "errors": {
+      "invalidCredentials": "Wrong email or password.",
+      "emailNotConfirmed": "You haven't confirmed your email yet. Check your inbox.",
+      "userExists": "An account with that email already exists.",
+      "weakPassword": "That password is too weak. Use a longer one.",
+      "invalidEmail": "That email address isn't valid.",
+      "rateLimit": "Too many attempts. Wait a moment and try again.",
+      "generic": "Something went wrong. Please try again."
+    }
   }
 }
