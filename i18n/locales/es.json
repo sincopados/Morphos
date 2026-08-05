@@ -1,0 +1,234 @@
+{
+  "app": {
+    "name": "MORPHOS",
+    "tagline": "Cerebros digitales que aprenden, mutan y evolucionan."
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "obras": "Obras",
+    "equipo": "Equipo",
+    "miSaldo": "Mi saldo",
+    "soporte": "Soporte",
+    "global": "Dashboard Global",
+    "usuarios": "Usuarios",
+    "empresas": "Empresas",
+    "egresos": "Egresos",
+    "salir": "Cerrar sesión",
+    "idioma": "Idioma",
+    "cambiarEmpresa": "Cambiar de empresa"
+  },
+  "auth": {
+    "entrar": "Entrar",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "conGoogle": "Continuar con Google",
+    "oBien": "o bien",
+    "error": "No hemos podido iniciar sesión",
+    "revisaCorreo": "Revisa tu correo para confirmar el acceso"
+  },
+  "empresa": {
+    "selecciona": "Selecciona una empresa",
+    "sinEmpresas": "No perteneces a ninguna empresa todavía",
+    "estado": {
+      "activa": "Activa",
+      "bloqueada": "Bloqueada",
+      "dada_de_baja": "Dada de baja"
+    }
+  },
+  "dashboard": {
+    "titulo": "Dashboard de empresa",
+    "generadoSemana": "Generado en la semana",
+    "vsSemanaAnterior": "vs. semana anterior",
+    "cobrosGenerales": "Cobros generales",
+    "gastosGenerales": "Gastos generales",
+    "cobrosPorObra": "Cobros por obra",
+    "gastosPorObra": "Gastos por obra",
+    "tareasPendientes": "Tareas pendientes por obra",
+    "margen": "Margen",
+    "periodo": "Período",
+    "semana": "Semana en curso",
+    "mes": "Mes en curso",
+    "soloConfirmados": "Solo se contabilizan registros confirmados.",
+    "sinDatos": "Sin movimientos en el período"
+  },
+  "obra": {
+    "titulo": "Obras",
+    "numero": "Nº",
+    "cliente": "Cliente",
+    "estadoLabel": "Estado",
+    "tareasAbiertas": "Tareas abiertas",
+    "vencidas": "vencidas",
+    "ingresos": "Ingresos",
+    "coste": "Coste",
+    "beneficio": "Beneficio",
+    "manoObra": "Mano de obra",
+    "gastos": "Gastos",
+    "lineas": "Producto / Servicio",
+    "manoObraDerivada": "La mano de obra se deriva del check-in. No hay alta manual de horas.",
+    "sinObras": "Esta empresa aún no tiene obras",
+    "estado": {
+      "borrador": "Borrador",
+      "activa": "Activa",
+      "atrasada": "Atrasada",
+      "completada": "Completada",
+      "cerrada": "Cerrada",
+      "archivada": "Archivada"
+    }
+  },
+  "rol": {
+    "owner": "Dueño",
+    "administrador": "Administrador",
+    "trabajador": "Trabajador",
+    "vendedor": "Vendedor",
+    "afiliado": "Afiliado",
+    "morphos_core": "MORPHOS Core"
+  },
+  "saldo": {
+    "titulo": "Mi saldo",
+    "acumulado": "Saldo acumulado",
+    "horasConfirmadas": "Horas confirmadas",
+    "pendienteAprobacion": "Pendiente de aprobación",
+    "explicacion": "Tu saldo es de tu pertenencia a esta empresa. Cambiar de empresa lo cambia entero.",
+    "sinRegistros": "Aún no tienes registros en esta empresa"
+  },
+  "bloqueo": {
+    "titulo": "Renueva tu membresía",
+    "descripcion": "La membresía de {empresa} venció el {fecha}. Los datos están intactos y todo vuelve en cuanto se registre el pago.",
+    "pagar": "Pagar ahora",
+    "problema": "Tengo un problema con el pago",
+    "problemaEnviado": "Hemos abierto una incidencia de prioridad alta. El equipo de MORPHOS te contactará.",
+    "soloSaldo": "Tu empresa está bloqueada. Puedes consultar tu saldo, pero no registrar nada nuevo."
+  },
+  "global": {
+    "titulo": "Dashboard Global",
+    "subtitulo": "Infraestructura y estructura general del sistema",
+    "empresasActivas": "Empresas activas",
+    "empresasBloqueadas": "Empresas bloqueadas",
+    "dadasDeBaja": "Dadas de baja",
+    "recaudoMembresias": "Recaudo de membresías",
+    "pagas": "Pagas",
+    "proximasAVencer": "Próximas a vencer",
+    "sinMora": "Modelo prepago: no hay membresías pendientes con mora.",
+    "recaudoMensual": "Recaudo mensual",
+    "ingresos": "Ingresos",
+    "egresos": "Egresos",
+    "neto": "Neto del mes",
+    "vsMesAnterior": "vs. mes anterior",
+    "alertasSoporte": "Alertas de soporte",
+    "alertasCobro": "Alertas de cobro",
+    "resumen": "Resumen del sistema",
+    "personasActivas": "Personas activas",
+    "obrasActivas": "Obras activas",
+    "movimientosPendientes": "Movimientos pendientes",
+    "supervisionContratada": "Con supervisión contratada",
+    "venceEnDias": "Vence en {dias} días",
+    "sinAlertas": "Nada pendiente"
+  },
+  "usuarios": {
+    "titulo": "Gestión total de usuarios",
+    "subtitulo": "CRUD completo sobre todos los usuarios del sistema",
+    "nuevo": "Nuevo usuario",
+    "nombre": "Nombre",
+    "email": "Correo",
+    "rolGlobal": "Rol global",
+    "pertenencias": "Pertenencias",
+    "tarifa": "Tarifa/h",
+    "activo": "Activo",
+    "raiz": "Cuenta raíz",
+    "raizProtegida": "La cuenta raíz no se puede eliminar ni degradar.",
+    "excluyente": "morphos_core es excluyente: no puede pertenecer a ninguna empresa.",
+    "eliminar": "Eliminar",
+    "eliminarLogico": "Se desactiva y conserva su historial",
+    "sinPertenencias": "Sin pertenencias"
+  },
+  "empresas": {
+    "titulo": "Gestión general de las empresas",
+    "nombre": "Nombre",
+    "equipo": "Equipo",
+    "obras": "Obras",
+    "vence": "Vence",
+    "compliance": "Compliance",
+    "faltaCompliance": "Faltan reglas",
+    "entrar": "Entrar a gestionar",
+    "registrarPago": "Registrar pago",
+    "darDeBaja": "Dar de baja",
+    "supervision": "Supervisión"
+  },
+  "egresos": {
+    "titulo": "Egresos de MORPHOS",
+    "nuevo": "Nuevo egreso",
+    "concepto": "Concepto",
+    "categoria": "Categoría",
+    "importe": "Importe",
+    "fecha": "Fecha",
+    "cat": {
+      "infraestructura": "Infraestructura",
+      "nomina": "Nómina interna",
+      "proveedores": "Proveedores",
+      "comisiones": "Comisiones",
+      "otros": "Otros"
+    }
+  },
+  "soporte": {
+    "titulo": "Soporte",
+    "nueva": "Nueva incidencia",
+    "asunto": "Asunto",
+    "prioridad": "Prioridad",
+    "responsable": "Responsable",
+    "antiguedad": "Antigüedad",
+    "cerrar": "Cerrar",
+    "sinIncidencias": "No hay incidencias abiertas",
+    "abiertaPor": "Abierta por",
+    "prio": {
+      "baja": "Baja",
+      "media": "Media",
+      "alta": "Alta"
+    },
+    "tipo": {
+      "pago": "Pago",
+      "saldo": "Saldo",
+      "datos": "Datos",
+      "tecnico": "Técnico",
+      "otro": "Otro"
+    }
+  },
+  "perfil": {
+    "titulo": "Mi perfil",
+    "datos": "Datos personales",
+    "avatar": "Foto de perfil",
+    "avatarAyuda": "Enlace a una imagen. Déjalo vacío para usar tus iniciales.",
+    "emailBloqueado": "El correo identifica tu cuenta y solo lo puede cambiar el equipo de MORPHOS.",
+    "guardado": "Datos actualizados",
+    "password": "Contraseña",
+    "actual": "Contraseña actual",
+    "nueva": "Nueva contraseña",
+    "repetir": "Repite la nueva contraseña",
+    "minimo": "Al menos {min} caracteres.",
+    "cambiarPassword": "Cambiar contraseña",
+    "passwordCambiada": "Contraseña cambiada",
+    "errorActual": "La contraseña actual no es correcta",
+    "errorCorta": "La contraseña debe tener al menos {min} caracteres",
+    "errorNoCoincide": "Las dos contraseñas no coinciden",
+    "pertenenciasAyuda": "Tu rol, tu tarifa y tu saldo son de cada pertenencia, no de tu persona.",
+    "coreSinEmpresas": "Como MORPHOS Core no perteneces a ninguna empresa: tu alcance es todo el sistema."
+  },
+  "tema": {
+    "titulo": "Apariencia",
+    "claro": "Claro",
+    "oscuro": "Oscuro",
+    "sistema": "Sistema"
+  },
+  "comun": {
+    "guardar": "Guardar",
+    "cancelar": "Cancelar",
+    "crear": "Crear",
+    "buscar": "Buscar",
+    "acciones": "Acciones",
+    "cargando": "Cargando…",
+    "total": "Total",
+    "dias": "días",
+    "horas": "h",
+    "volver": "Volver",
+    "error": "Algo ha ido mal"
+  }
+}
