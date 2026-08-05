@@ -1,10 +1,25 @@
 import { createRequire } from 'node:module'
+import { dirname, join } from 'node:path'
 
 // @supabase/* importa tslib; sin este alias el bundler resuelve la build
 // CJS y el prerender falla con
 // "Cannot destructure property '__extends' of '__toESM(...).default'".
 // Se resuelve a ruta absoluta para que el alias no se reaplique en bucle.
 const tslibEsm = createRequire(import.meta.url).resolve('tslib/tslib.es6.mjs')
+
+// @nuxtjs/supabase importa `h3` sin fijar version. En el bundle SSR de Nuxt eso
+// resuelve a h3 v2, pero los eventos que recibe vienen de Nitro 2.13, que sigue
+// en h3 v1: `getRequestHeader` de v2 espera `event.req.headers.get` y revienta
+// con "event.req.headers.get is not a function" en cada peticion SSR, dejando
+// al servidor sin poder leer la sesion. Se ancla a la v1 que usa Nitro.
+// h3 esta en devDependencies fijado a la misma version que Nitro (1.15.11).
+// Se apunta al ESM: el CJS no expone los named exports que espera el bundle.
+// El `exports` de h3 no publica subrutas, asi que se llega por ruta de archivo
+// a partir de la que si resuelve.
+const h3V1 = join(
+  dirname(createRequire(import.meta.url).resolve('h3')),
+  'index.mjs'
+)
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -30,13 +45,15 @@ export default defineNuxtConfig({
     }
   },
 
+  alias: {
+    tslib: tslibEsm
+  },
+
   routeRules: {
     '/': { prerender: true }
   },
 
-  alias: {
-    tslib: tslibEsm
-  },
+  compatibilityDate: '2026-06-30',
 
   nitro: {
     alias: {
@@ -44,7 +61,23 @@ export default defineNuxtConfig({
     }
   },
 
-  compatibilityDate: '2026-06-30',
+  vite: {
+    plugins: [
+      {
+        // El alias de h3 tiene que ser quirurgico: aplicarlo a todo el bundle
+        // rompe a Nuxt, que si usa la API de h3 v2 (`H3Error` y compania).
+        // Solo se redirige lo que importa @nuxtjs/supabase.
+        name: 'morphos:supabase-h3-v1',
+        enforce: 'pre',
+        resolveId(source: string, importer?: string) {
+          if (source === 'h3' && importer?.includes('@nuxtjs/supabase')) {
+            return h3V1
+          }
+          return null
+        }
+      }
+    ]
+  },
 
   eslint: {
     config: {

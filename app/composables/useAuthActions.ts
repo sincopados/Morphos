@@ -46,6 +46,9 @@ export function useAuthActions() {
 
   /** Vuelve a donde el usuario queria ir antes de que el guard lo interceptara. */
   async function goToIntendedDestination() {
+    // Antes de navegar, la sesion tiene que tener perfil y pertenencias: es lo
+    // que reclama una invitacion pendiente y lo que fija la empresa activa.
+    await useAppUser().load(true)
     await navigateTo(redirect.pluck() || localePath('/'))
   }
 

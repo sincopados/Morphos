@@ -1,74 +1,379 @@
-# MORPHOS — Workforce/Ventas/Afiliados
+# MORPHOS — context.md
+### Documento maestro de contexto del proyecto
+### Última actualización: 4 de agosto, 2026
 
-Motor único de generación de valor → confirmación → saldo. Un evento (asistencia, venta, afiliación) queda `pendiente` hasta que la cuenta maestra de la empresa lo confirma y se acredita a un saldo.
+---
 
-## Language
+## 1. Qué es MORPHOS
 
-**Company DNA**:
-Concepto a futuro (Fase 1+) para una entidad que evoluciona con el uso real de una empresa, mutada por comparaciones entre lo sugerido y lo real (ej. nómina). Hoy **no existe como tabla ni campo** — la fila de `companies` más las respuestas del onboarding son solo la "semilla". No construir persistencia para esto en el MVP.
-_Avoid_: usar "Company DNA" como sinónimo de la fila `companies` — son cosas distintas (una es estática y actual, la otra evolutiva y futura).
+Sistema Operativo Empresarial Adaptativo (Adaptive Business Operating
+System). No es un ERP con IA encima ni un SaaS de RRHH — es un sistema
+que aprende cómo funciona cada empresa, coordina personas, procesos y
+motores de inteligencia artificial, y ayuda a las empresas a operar
+mejor cada día. Principio rector: **la inteligencia propone, el
+humano decide** (autonomía supervisada).
 
-**Compliance pendiente**:
-Estado de una empresa cuya jurisdicción (país+región) todavía no tiene una fila activa en `compliance_rules`. Es un estado persistido y explícito (no derivado), porque se consulta en múltiples lugares de la UI y cambia raramente. Mientras está en este estado, la empresa se crea igual (no bloquea el onboarding) pero no recibe alertas de compliance hasta que el equipo interno active su jurisdicción.
+---
 
-**Tutor** (role):
-Capacita a las empresas que pertenecen al sistema MORPHOS. Es un rol exclusivo de plataforma: siempre `company_id = null`, nunca pertenece a una empresa cliente específica.
-_Gap abierto_: todavía no tiene un `type` propio en `ledger_entries` ni pantalla de registro — hoy comparte la infraestructura de `vendedor`/`afiliado` sin tener semántica propia implementada. Resolver antes de Hito 2.
+## 2. Empresas y obras
 
-**Asesor** (role):
-Hace ventas y atención al cliente, ya sea para MORPHOS (plataforma) o para una empresa cliente específica. `company_id` distingue el caso: `null` = asesor de MORPHOS, con valor = asesor interno de esa empresa. No requiere campo nuevo — reutiliza `users.company_id` con la misma regla que ya aplica a `afiliado`.
-_Gap abierto_: mismo pendiente que `tutor` — sin `type` de ledger ni pantalla propia todavía.
+### 2.1 Cardinalidad (regla base del modelo)
 
-**Solicitud de modificación** (`modification_requests`):
-Registro de auditoría de un cambio a un `ledger_entry` ya confirmado. No es un flujo de aprobación por un tercero: el `owner` la solicita y su propio registro como `approved_by` es solo trazabilidad de que él lo autorizó, no una revisión independiente. `morphos_core` aparece como `approved_by` únicamente cuando el owner pide soporte de MORPHOS para ejecutar el cambio por él. El propósito del registro es dejar rastro inmutable de que se rompió la ventana de 72h y por qué — no gobernanza de doble aprobación.
+- **Una empresa tiene muchas obras.** Una obra pertenece siempre a una
 
-**Referido** (`ledger_entries.type = referido`):
-Único mecanismo para recompensas de crecimiento de MORPHOS (empresa o afiliado de plataforma que trae una nueva empresa/usuario). No existe tabla `referral_rewards` separada — ver ADR-0001. `scope = platform`, confirmado por `morphos_core`, con `reward_type`/`reward_amount` en `metadata`.
-_Avoid_: "referral_rewards" como tabla — fue eliminada a favor del motor único de ledger.
+  sola empresa; no se comparten obras entre empresas.
+- **Un usuario pertenece a una o varias empresas.** Ninguna cuenta está
+  atada a una única empresa: la misma persona puede trabajar para
+  varias, y cambia entre ellas con un selector de empresa. El rol se
+  define **por empresa**, no por persona — alguien puede ser `owner` de
+  la suya y `trabajador` en otra, y cada pertenencia lleva su propio
+  rol, su propio saldo y su propia tarifa.
+- **Un dueño puede tener varias empresas.** Es el caso particular
+  anterior: una misma persona crea y administra N empresas. Cada una
+  mantiene sus datos, usuarios y contabilidad completamente separados.
+- **Una empresa puede tener uno o más dueños.** Se admiten varios
+  `owner` sobre la misma empresa (socios), todos con el mismo alcance
+  total sobre ella. Uno de ellos queda marcado como **titular de la
+  suscripción** — el que paga —, y esa es la única diferencia entre
+  ellos.
+- En resumen: `usuario` ↔ `empresa` es una relación **muchos a muchos**
+  y el rol es un atributo de esa relación; `empresa` → `obra` es **uno
+  a muchos**.
 
-**Supervisión contratada**:
-Servicio comercial por el cual una empresa contrata a MORPHOS para que `morphos_core` pueda confirmar `ledger_entries` en su nombre. Es un estado propio de la empresa (contratado/no contratado, con fecha), no un rol ni un atajo vía `admin_delegado` — permite distinguir en el historial "confirmado por la empresa" de "confirmado por soporte externo contratado". Sin este estado, la regla no-negociable #2 ("MORPHOS confirma solo como servicio contratado, nunca por defecto") no se puede aplicar como constraint real.
-Se registra en `companies.supervision_contracted` (+ `supervision_contracted_at`), y es lo que la política de confirmación consulta para permitir que `morphos_core` confirme.
+### 2.2 Definiciones
 
-**Scope** (`ledger_entries.scope`):
-Derivado de `users.company_id` del `origin_user_id`, no un valor libre por tipo de evento: si el usuario pertenece a una empresa (`company_id` con valor), el evento es `scope = company` — un trabajador siempre genera eventos dentro del ámbito de su empresa. Si el usuario es de plataforma (`company_id = null`, ej. afiliado/tutor/asesor de MORPHOS), el evento es `scope = platform`.
-`ledger_entries.company_id` es nullable justamente para esto: un constraint exige que `scope = 'company'` traiga `company_id`, y que `scope = 'platform'` lo deje en `null`.
+- **Empresa** — unidad raíz del sistema. Agrupa a todos sus usuarios,
+  obras y movimientos económicos. Los datos nunca cruzan de una empresa
+  a otra, ni siquiera entre empresas del mismo dueño.
+- **Obra** — unidad operativa dentro de una empresa (proyecto, sitio,
+  cliente o centro de coste, según la industria). Es el nivel al que se
+  asignan administradores, tareas, cobros y gastos, y el eje de todos
+  los desgloses del dashboard (sección 4).
+- Estados de una obra: `activa`, `cerrada`, `archivada`. Solo las
+  activas aparecen en los desgloses operativos del dashboard.
+- Los movimientos que no pertenecen a ninguna obra concreta (gastos de
+  estructura, cobros generales) se imputan a la obra virtual
+  **"General / Empresa"**, que existe siempre y no se puede borrar.
 
-**Saldo diario**:
-La unidad base real de cálculo. Cada `ledger_entry` se ancla a un día concreto (`period_ref` = fecha ISO del día, ej. `"2026-07-28"`, siempre — no semana ni mes). `semanal`/`mensual` no son unidades de cálculo distintas, son solo criterios de *agregación* de días al mostrar saldo o definir cuándo se paga. Esto preserva el detalle de cada movimiento individual sin perderlo en un agregado.
-_Avoid_: `period_ref` con formato de semana ISO (`"2026-W31"`) o mes (`"2026-08"`) — ya no aplica, se reemplaza por fecha diaria siempre.
+---
 
-**Pay period** (`users.pay_period`):
-Enum real: `diario | semanal | mensual` (la spec original decía `semanal | quincenal | mensual` — `quincenal` no es un caso real de negocio, las empresas pagan diario, semanal o mensual). Solo determina cómo se *agrupan* los días de `ledger_entries` al mostrar el saldo del período, no cómo se guarda cada entrada.
-_Avoid_: `quincenal` como valor de `pay_period`.
+## 3. El sistema de usuarios — completo
 
-**Entrada vinculada** (`ledger_entries` extra/deducción → jornada):
-Una entrada `type = extra` o `deduccion` que se origina junto a una jornada (`work_full_day`/`work_half_day`) se vincula explícitamente a ella, no solo por compartir usuario y día. Requiere el vínculo explícito porque un mismo usuario puede tener más de un movimiento el mismo día (ej. corrección) y el admin necesita saber sin ambigüedad a cuál jornada pertenece cada extra/deducción al confirmar.
-Se modela como `ledger_entries.related_entry_id` (auto-referencia nullable), restringida por constraint a entradas de tipo `extra`/`deduccion`.
+### 3.1 Roles (`user_role`)
 
-**Tamaño de equipo** (`team_size`):
-Derivado, no persistido — es `COUNT(users WHERE company_id = X)`, igual que el saldo (evita desincronización). No existe como campo en `companies`. La pregunta de la Pantalla 5 del onboarding ("¿cuántas personas trabajan contigo?") es una respuesta transitoria del wizard, usada solo para decidir el bloqueo en ese instante (antes de que existan filas `users`, que se crean recién en Pantalla 7) — no se guarda como campo aparte.
+| Rol | Quién es | Alcance |
+|---|---|---|
+| `owner` | Dueño del negocio, cuenta maestra. Puede haber más de uno por empresa, y una misma persona puede ser `owner` de varias empresas | Toda la empresa (o empresas) de la que es dueño, con todas sus obras |
+| `administrador` | Administrador que el dueño designa y que puede gestionar todo en cada obra asignada por el owner | Las obras que tiene asignadas |
+| `trabajador` | Persona con horario fijo (asistencia por bloques) | hace cheking de entrada y salida, genera sus partes de trabajo, solo ve su propio saldo |
+| `vendedor` | Genera ventas para la empresa a la que pertenece | Solo genera ventas para la empresa a la que pertenece, ve su propio saldo |
+| `afiliado` | Genera referidos/comisiones para la empresa a la que pertenece, sin horario | Solo genera ventas para la empresa a la que pertenece, ve su propio saldo |
+| `morphos_core` | Equipo interno de MORPHOS (soporte/supervisión contratada) | SUPER Admin de todo el sistema y sus empresas |
 
-**Industria "Otro"** (`industry_category = 'otro'`):
-Es un valor más de la lista cerrada, no una puerta a texto libre clasificable. El campo de texto que lo acompaña en el onboarding (Pantalla 3) es solo una nota descriptiva (ej. `industry_other_note`), sin efecto funcional — nunca se usa para clasificar ni para precargar `full_day_value`/`half_day_value`. Empresas con `industria = otro` no reciben valores sugeridos; el dueño los llena a mano.
-_Avoid_: tratar el texto de "Otro" como entrada a un clasificador — eso es explícitamente fuera de alcance del MVP (ver §5 de la spec).
+### 3.2 Perfiles (`profile_type`)
 
-**Sitio/obra** (`work_sites`):
-Dirección de trabajo de una empresa, informada de antemano al trabajador. Reemplaza al "QR diario" como unidad de verificación de check-in — ver ADR-0002.
+- **`con_horario`** — usa check-in de bloques de tiempo (día
+  completo = 8h, medio día = 4h, más una casilla opcional de
+  extra/deducción). Aplica a `trabajador`.
+- **`sin_horario`** — no hace check-in de tiempo; genera un registro
+  cada vez que ocurre un evento (una venta, un referido, un servicio
+  prestado). Aplica a `vendedor`, `afiliado`, `tutor`, `asesor`.
 
-**Check-in con evidencia fotográfica**:
-Flujo de asistencia del trabajador (`profile_type = con_horario`): confirma asistencia del día, llega al sitio/obra y toma una **foto de llegada** en el lugar; al finalizar la jornada toma una **foto de salida** mostrando el avance del trabajo realizado. Reemplaza al escaneo de QR diario — ver ADR-0002.
-_Avoid_: "QR del día" / "escanear QR" como parte del check-in — eliminado, ver ADR-0002.
+### 3.3 Pertenencia a empresa y asignación a obras
 
-**Turno asignado**:
-Definición del dueño/admin, por trabajador y por día, de qué jornada se espera (`work_full_day`/`work_half_day`) y en qué sitio/obra. El trabajador no la elige — solo la confirma con foto de llegada y foto de salida. El `type` del `ledger_entry` resultante viene de este turno asignado, no de las horas reales trabajadas.
-Se modela en la tabla `assigned_shifts` (`user_id`, `shift_date`, `jornada_type`, `work_site_id`, `assigned_by`), única por trabajador y día.
+- Cualquier usuario puede pertenecer a **una o varias empresas**
+  (sección 2.1), con un rol distinto en cada una. `morphos_core` es la
+  excepción: no pertenece a ninguna, es transversal a todas.
+- Nada se comparte entre las empresas de una misma persona: el saldo,
+  la tarifa, el historial y los permisos son de la pertenencia, no del
+  usuario. Cambiar de empresa en el selector cambia todo lo que ve.
+- El `owner` asigna a cada `administrador` una o varias obras de esa
+  empresa; fuera de ellas no ve datos ni puede operar.
+- `trabajador`, `vendedor` y `afiliado` ven únicamente sus propios
+  registros y su propio saldo dentro de esa empresa, nunca los totales
+  de la empresa ni de la obra.
+- Toda acción sobre un registro económico queda auditada con usuario,
+  fecha y obra afectada.
 
-**Horas reales de llegada/salida** (`checkin_events`):
-Timestamps y fotos reales de llegada y salida. Viven en su **propia tabla** `checkin_events`, no en `metadata` del `ledger_entry`: la separación es lo que hace cumplible la regla de que son visibles **solo para el administrador** — el trabajador puede escribir su evidencia ahí pero no leerla, mientras que en `metadata` cualquiera que vea la entrada vería también sus horas. El trabajador únicamente ve la jornada ya establecida y su saldo acumulado. Se usan para alertas de compliance, nunca para el cálculo del pago (eso lo determina el turno asignado, no las horas reales).
-_Avoid_: guardar horas o fotos de check-in en `ledger_entries.metadata` — rompe la separación de visibilidad.
+### 3.4 Autenticación
 
-**Bloqueo por rechazos acumulados**:
-Contador acumulado por trabajador (no por registro individual) de rechazos a sus `ledger_entries`. Al 2do rechazo se notifica de inmediato al administrador para que se comunique directamente con el trabajador y entienda qué sucede. Al 3er rechazo se bloquea definitivamente la capacidad de check-in de ese trabajador — solo un admin puede desbloquearlo. Todos los roles superiores al trabajador (owner y admin_delegado) se notifican por igual, no solo quien confirmó/rechazó. Si el motivo del rechazo es un error del sistema MORPHOS (no del trabajador), corresponde contactar directamente a soporte, no seguir el flujo de bloqueo.
-El contador es derivado (`COUNT` de entradas rechazadas del trabajador) y el estado de bloqueo se persiste en `users.checkin_blocked` (+ `checkin_blocked_at`), aplicado por triggers.
-_Gap abierto_: la notificación al administrador en el 2do rechazo vive en la capa de aplicación — la base de datos solo aplica el bloqueo del 3ro. Falta construirla.
+Dos caminos, mismo modelo de datos al final: **Google OAuth** o
+**correo/contraseña**.
+
+### 3.5 Modificación de registros después de confirmados
+
+- Ventana de 72 horas: el `owner` puede modificar libremente.
+- Después de 72 horas: requiere solicitud formal con motivo,
+  registrada en `modification_requests`, visible para el usuario
+  afectado si hay disputa.
+- `morphos_core` puede modificar como soporte, siempre auditado igual
+  que el dueño.
+
+---
+
+## 4. Dashboard de empresas registradas — reglas de negocio
+
+Alcance: el dashboard es **por empresa**, nunca consolidado entre
+empresas. El `owner` ve el dashboard de la empresa que tenga
+seleccionada, con todas sus obras; si es dueño de varias, cambia de
+empresa con el selector y el dashboard se recalcula por completo. Si la
+empresa tiene varios `owner`, todos ven exactamente lo mismo. El
+`administrador` ve solo las obras que el `owner` le asignó.
+`morphos_core` puede ver el dashboard de cualquier empresa.
+
+### 4.1 Bloques obligatorios del dashboard del `owner`
+
+1. **Generado en la semana** — total facturado/ingresado por la empresa
+   en la semana en curso, sumando todas las obras. Semana = lunes a
+   domingo en la zona horaria de la empresa. Muestra comparativa contra
+   la semana anterior.
+2. **Tareas pendientes por obra** — listado por obra con el número de
+   tareas abiertas (no completadas), destacando las vencidas. Cada obra
+   es una fila; al abrirla se ve el detalle de sus tareas.
+3. **Cobros generales** — total de cobros (dinero efectivamente
+   recibido) de toda la empresa en el período seleccionado.
+4. **Gastos generales** — total de gastos de toda la empresa en el
+   período seleccionado, incluyendo nómina, materiales y gastos
+   operativos.
+5. **Cobros por obra** — desglose de cobros por cada obra activa.
+6. **Gastos por obra** — desglose de gastos por cada obra activa.
+
+### 4.2 Reglas de cálculo
+
+- **Cobro ≠ venta**: una venta registrada solo suma a "cobros" cuando
+  el pago está confirmado; mientras tanto queda como pendiente de cobro.
+- **Margen por obra** = cobros por obra − gastos por obra. Se muestra
+  junto a cada obra y admite valores negativos (obra en pérdida).
+- Los totales generales deben cuadrar exactamente con la suma de los
+  desgloses por obra; los movimientos no asignados a ninguna obra se
+  agrupan en una obra virtual "General / Empresa".
+- Período por defecto: semana en curso. Selector para mes en curso y
+  rango personalizado; el bloque "Generado en la semana" siempre es
+  semanal, sin importar el selector.
+- Solo se contabilizan registros confirmados. Los registros modificados
+  bajo las reglas de la sección 3.5 recalculan el dashboard y quedan
+  auditados.
+- Obras cerradas o archivadas no aparecen en los desgloses activos,
+  pero sí siguen contando en los totales históricos del período.
+
+### 4.3 Visibilidad por rol
+
+| Rol | Qué ve del dashboard |
+|---|---|
+| `owner` | Todos los bloques, toda la empresa y todas sus obras |
+| `administrador` | Los mismos bloques, limitados a sus obras asignadas |
+| `trabajador` / `vendedor` / `afiliado` | No accede al dashboard; solo su propio saldo y sus registros |
+| `morphos_core` | Cualquier empresa, en modo soporte y siempre auditado |
+
+### 4.4 Panel de sistema (`morphos_core`)
+
+Dashboard **independiente** del de empresa, porque no mira una empresa
+sino todas. Solo lo ve el equipo interno de MORPHOS.
+
+- **Resumen del sistema** — empresas registradas, personas activas,
+  obras activas, movimientos pendientes de confirmar, generado en la
+  semana y cuántas empresas tienen supervisión contratada.
+- **Listado de empresas** — cada una con su jurisdicción, tamaño de
+  equipo, obras activas, ingresos de la semana, movimientos pendientes
+  y si le faltan reglas de compliance cargadas.
+- **Entrar a gestionar una empresa** — selecciona esa empresa como
+  activa y reutiliza las pantallas normales. No hay una versión
+  "de soporte" de cada pantalla: es la misma, con más alcance.
+
+`morphos_core` puede gestionarlo todo **sin excepciones** y sin
+pertenecer a ninguna empresa: empresas, equipos, obras, asignaciones de
+administrador y confirmación de movimientos del ledger, esté o no
+contratada la supervisión.
+
+La **supervisión contratada** sigue existiendo como estado comercial de
+la empresa (contratada o no, y desde cuándo) y se gestiona desde este
+panel, pero ya no concede ni niega permisos. Consecuencia asumida: en
+el historial `confirmed_by` dice quién confirmó, pero deja de poder
+deducirse si fue un servicio contratado o una intervención de soporte.
+Si esa distinción hiciera falta más adelante, se marca en el propio
+registro (`ledger_entries.metadata`), no volviendo a atarla a un flag
+de la empresa.
+
+---
+
+## 5. Módulo de Obras
+
+Referencia funcional: Jobber (pantalla de *Job*). MORPHOS adapta ese
+modelo, con una diferencia estructural: **la mano de obra no se teclea
+a mano — se deriva del sistema de check-in de cada trabajador**
+(sección 3.2, perfil `con_horario`).
+
+### 5.1 Entidad `obras`
+
+Cabecera de la obra, equivalente a la ficha superior del Job.
+
+| Campo | Tipo | Origen / notas |
+|---|---|---|
+| `id` | uuid | |
+| `empresa_id` | fk → `empresas` | Una obra pertenece a una sola empresa (sección 2.1) |
+| `numero` | int | Correlativo **por empresa** (Job # 82). Nunca se reutiliza |
+| `titulo` | text | "Karen Renovation (1st floor & Basement)" |
+| `cliente_id` | fk → `clientes` | Nombre, dirección de la propiedad, teléfono, email |
+| `direccion_obra` | text | Puede diferir de la dirección fiscal del cliente |
+| `tipo` | enum | `puntual` (one-off) \| `recurrente` |
+| `estado` | enum | `borrador`, `activa`, `atrasada`, `completada`, `cerrada`, `archivada` |
+| `fecha_inicio` / `fecha_fin` | date | "Started on" / "Ends on" |
+| `frecuencia_facturacion` | enum | `al_completar`, `mensual`, `por_visita`, `hitos` |
+| `pagos_automaticos` | bool | |
+| `vendedor_id` | fk → `usuarios` (rol `vendedor`) | "Salesperson". Base de la comisión |
+| `cotizacion_id` | fk → `cotizaciones` | "From Quote #5". Al aceptar la cotización se crea la obra copiando sus líneas |
+| `deposito_requerido` | money | |
+| `creado_por`, `created_at`, `updated_at` | | Auditoría (sección 3.5) |
+
+**Estado `atrasada`**: se calcula, no se teclea — una obra está atrasada
+cuando tiene visitas o tareas vencidas sin completar, o pasó
+`fecha_fin` sin estar completada.
+
+### 5.2 `obra_lineas` — Producto / Servicio
+
+Equivale a la tabla *Product / Service*. Es el precio pactado con el
+cliente, no el coste real.
+
+| Campo | Notas |
+|---|---|
+| `obra_id` | fk |
+| `orden` | posición en la lista |
+| `nombre` | "Demolición", "Hardwood floor Repair"… |
+| `descripcion` | texto multilínea con el detalle del alcance |
+| `imagen_id` | fk → `archivos` (miniatura de referencia) |
+| `cantidad` | decimal |
+| `coste_unitario` | money — coste estimado, puede ser 0 |
+| `precio_unitario` | money — lo que paga el cliente |
+| `total` | derivado = `cantidad × precio_unitario` |
+| `es_incluido` | bool — líneas informativas a $0 ("Materials and equipment") |
+
+Totales del bloque (todos derivados, nunca almacenados):
+`coste_total`, `precio_total`, `deposito_requerido`,
+`deposito_cobrado` (suma de cobros de tipo depósito, con su fecha),
+`deposito_pendiente`.
+
+### 5.3 Mano de obra — **derivada del check-in**
+
+En Jobber la tabla *Labor* se llena a mano. En MORPHOS **no existe alta
+manual de horas**: cada fila es la proyección de un registro de
+check-in del trabajador.
+
+- Fuente: los check-in de bloques (día completo = 8 h, medio día = 4 h,
+  más extra/deducción opcional) del perfil `con_horario`.
+- El trabajador, al hacer check-in, selecciona **a qué obra** imputa el
+  bloque. Sin obra, el bloque cae en "General / Empresa" (sección 2.2).
+- Vista por fila: trabajador, notas, fecha, hora de entrada y salida,
+  duración, coste. Totales al pie (p. ej. 120 h → $3.483,04) y
+  paginación.
+- `coste_mano_obra = horas × tarifa_hora del trabajador` vigente en la
+  fecha del bloque. La tarifa se versiona: cambiarla hoy no reescribe
+  el coste de obras pasadas.
+- Solo suman los bloques **confirmados**. Un bloque pendiente de
+  aprobación aparece marcado y no entra en el coste.
+- Correcciones: se ajusta el registro de check-in origen, bajo la
+  ventana de 72 h de la sección 3.5. La obra se recalcula sola.
+
+### 5.4 `obra_gastos` — Expenses
+
+Gastos directos imputados a la obra: materiales, alquiler de equipo,
+vertedero, subcontratas.
+
+| Campo | Notas |
+|---|---|
+| `obra_id`, `fecha`, `concepto`, `categoria` | |
+| `importe`, `proveedor` | |
+| `comprobante_id` | fk → `archivos` (foto/PDF del ticket) |
+| `registrado_por` | usuario que lo dio de alta |
+| `estado` | `pendiente` \| `confirmado` — solo los confirmados suman |
+
+### 5.5 `obra_visitas` — Scheduled visits
+
+| Campo | Notas |
+|---|---|
+| `obra_id`, `fecha_hora_inicio`, `fecha_hora_fin` | |
+| `titulo`, `instrucciones` | |
+| `estado` | `programada`, `en_curso`, `completada`, `vencida` (*Overdue*) |
+| `asignados[]` | fk → `usuarios` (uno o varios) |
+| `checklist_id` | fk → `checklists` |
+| `ventana_llegada` | "Arrive at start time" o rango horario |
+
+La **primera visita** ("First visit") es un derivado: la visita de
+menor fecha.
+
+### 5.6 Tareas
+
+Las tareas pendientes por obra que alimentan el bloque 2 del dashboard
+(sección 4.1) viven aquí: `obra_tareas` con `obra_id`, `titulo`,
+`asignado_a`, `fecha_limite`, `estado` (`abierta`, `en_curso`,
+`completada`) y `prioridad`. Una visita vencida cuenta como tarea
+vencida de esa obra.
+
+### 5.7 Facturación y cobros
+
+Bloque *Billing* de la ficha.
+
+- `recordatorios` — configuración de cuándo avisar (p. ej. "cuando la
+  obra se marque como cerrada").
+- `facturas` (fk `obra_id`, `cliente_id`): número, fecha de
+  vencimiento, estado (`proxima`, `enviada`, `vencida`, `pagada`),
+  asunto, total, saldo.
+- Una factura puede agrupar **varias obras del mismo cliente**: al
+  facturar se listan las obras con importe *no facturado* y subtotal, y
+  el usuario elige cuáles incluir. Depósitos y descuentos ya cobrados
+  se restan automáticamente.
+- `cobros` (fk `factura_id` u `obra_id`): fecha, importe, método,
+  tipo (`deposito` \| `pago` \| `pago_final`). **Solo los cobros
+  confirmados suman al dashboard** (sección 4.2).
+
+### 5.8 Panel económico de la obra
+
+Réplica del panel lateral "Total cost to date", calculado siempre en
+vivo:
+
+- **Ingresos** = suma de `obra_lineas.total` (precio pactado).
+- **Coste** = mano de obra derivada del check-in (5.3) + gastos
+  confirmados (5.4).
+- **Beneficio** = ingresos − coste, con su porcentaje.
+- **Actividad reciente** — últimos eventos de la obra ("eberg registró
+  8 h de trabajo, hace 3 h").
+- **Notas internas** — visibles para `owner` y `administrador`
+  asignado; nunca para el cliente.
+
+### 5.9 Enlace con el dashboard (sección 4)
+
+- *Cobros por obra* = suma de `cobros` confirmados de la obra.
+- *Gastos por obra* = mano de obra (5.3) + `obra_gastos` confirmados.
+- *Generado en la semana* = cobros confirmados de todas las obras en la
+  semana en curso.
+- *Tareas pendientes por obra* = `obra_tareas` abiertas + visitas
+  vencidas.
+
+### 5.10 Permisos
+
+| Acción | `owner` | `administrador` | `trabajador` | `vendedor` |
+|---|---|---|---|---|
+| Crear / editar obra | Sí | Solo sus obras asignadas | No | No |
+| Ver panel económico | Sí | Solo sus obras | No | No |
+| Registrar horas | — | — | Vía check-in propio | — |
+| Alta de gastos | Sí | Sí, en sus obras | No | No |
+| Facturar y cobrar | Sí | Según permiso del `owner` | No | No |
+| Ver sus visitas/tareas | Sí | Sí | Solo las asignadas | — |
+
+---
+
+## 6. Identidad de marca (resumen)
+
+- Nombre: **MORPHOS**. *(Pendiente: verificación de marca registrada
+  — existen otras empresas de tecnología usando nombres muy similares,
+  incluyendo "MorphOS" como sistema operativo. No usar en materiales
+  legales/contractuales hasta resolver esto.)*
+- Colores: Cian Morphos `#00D4FF`, Blanco Sistema `#F5F5F5`, Negro
+  Profundo `#0D0D0D`.
+- Tagline: "Cerebros digitales que aprenden, mutan y evolucionan."
+- Pilares: Aprende, Muta, Confirma, Evoluciona — cada uno corresponde
+  a un mecanismo real del sistema (Company DNA, motor de reglas por
+  industria, confirmación humana obligatoria, ciclo de mejora con
+  datos reales del piloto).
+
+---
+

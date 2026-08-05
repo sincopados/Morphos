@@ -63,5 +63,64 @@
       "rateLimit": "Too many attempts. Wait a moment and try again.",
       "generic": "Something went wrong. Please try again."
     }
+  },
+  "roles": {
+    "owner": "Owner",
+    "administrador": "Administrator",
+    "trabajador": "Worker",
+    "vendedor": "Salesperson",
+    "afiliado": "Affiliate",
+    "tutor": "Tutor",
+    "asesor": "Advisor",
+    "morphos_core": "MORPHOS Core"
+  },
+  "team": {
+    "title": "Team",
+    "description": "Team at {company}. The owner adds people and decides which sites each administrator manages.",
+    "invite": "Invite someone",
+    "inviteDescription": "They get access when they sign in with this email.",
+    "loading": "Loading team…",
+    "noEmail": "No email",
+    "noSites": "No sites assigned",
+    "assignSites": "Sites managed",
+    "pendingInvite": "Invitation pending",
+    "blocked": "Check-in blocked",
+    "inactive": "Inactive",
+    "unblock": "Unblock",
+    "deactivate": "Deactivate",
+    "activate": "Reactivate",
+    "fields": {
+      "fullName": "Full name",
+      "role": "Role",
+      "emailHint": "If they already use MORPHOS at another company, their account is reused"
+    },
+    "validation": {
+      "fullName": "Enter the full name"
+    },
+    "switch": "Switch company"
+  },
+  "morphos": {
+    "title": "System panel",
+    "description": "MORPHOS view across every company in the system. Internal team only.",
+    "companies": "Companies",
+    "loading": "Loading companies…",
+    "empty": "No company registered yet.",
+    "manage": "Manage",
+    "supervised": "Supervision contracted",
+    "contractSupervision": "Contract supervision",
+    "cancelSupervision": "Cancel supervision",
+    "compliancePending": "No compliance rules",
+    "membersCount": "{n} people",
+    "sitesCount": "{n} sites",
+    "pending": "{n} to confirm",
+    "supervisionNote": "MORPHOS can only confirm entries for companies that contracted supervision. Everything else does not depend on it.",
+    "stats": {
+      "companies": "Companies",
+      "members": "Active people",
+      "workSites": "Active sites",
+      "pendingEntries": "Entries to confirm",
+      "weekIncome": "Earned this week",
+      "supervised": "With supervision contracted"
+    }
   }
 }
