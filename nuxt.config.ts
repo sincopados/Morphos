@@ -67,7 +67,9 @@ export default defineNuxtConfig({
     redirectOptions: {
       login: '/login',
       callback: '/confirm',
-      exclude: ['/login', '/confirm'],
+      // /api/** se excluye para que las rutas de servidor respondan JSON con su
+      // propia comprobación de rol, en vez de un 302 HTML hacia /login.
+      exclude: ['/login', '/confirm', '/api/**'],
     },
   },
 })

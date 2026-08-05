@@ -25,6 +25,29 @@ export interface PertenenciaConEmpresa extends Pertenencia {
   empresas: Empresa | null
 }
 
+/** Fila de `usuarios` con sus pertenencias, como la lee el Dashboard Global. */
+export interface UsuarioConPertenencias extends Usuario {
+  pertenencias: PertenenciaConEmpresa[]
+}
+
+/**
+ * Pertenencia con la persona detrás, como la lee el equipo de una empresa.
+ *
+ * `bloques` llega como agregado de PostgREST (`bloques(count)`) y dice cuántos
+ * fichajes cuelgan de ella. Importa porque `bloques.pertenencia_id` borra en
+ * cascada: sin ese dato no se puede saber si eliminar a alguien destruiría su
+ * historial de trabajo.
+ */
+export interface MiembroEquipo extends Pertenencia {
+  usuarios: Usuario | null
+  bloques?: { count: number }[]
+}
+
+/** Fichajes colgando de una pertenencia. 0 = se puede eliminar sin perder nada. */
+export function bloquesDe(miembro: MiembroEquipo) {
+  return miembro.bloques?.[0]?.count ?? 0
+}
+
 /**
  * El usuario de MORPHOS (fila `usuarios`), no el de `auth`. Aquí vive el rol
  * global; los roles por empresa viven en las pertenencias.
@@ -47,25 +70,56 @@ export function usePertenencias() {
  * La empresa del selector. Todo lo que ve el usuario cuelga de aquí: cambiarla
  * cambia rol, tarifa, saldo e historial por completo.
  */
+/**
+ * La empresa que `morphos_core` está gestionando.
+ *
+ * Existe porque el rol es excluyente (ADR-0002): no tiene pertenencias, así que
+ * no hay de dónde deducir la empresa del selector. La carga el middleware
+ * `empresa` a partir del slug de la ruta.
+ */
+export function useEmpresaCore() {
+  return useState<Empresa | null>('morphos:empresaCore', () => null)
+}
+
+/**
+ * Resuelve una empresa a partir de un slug, sin tocar la ruta actual.
+ *
+ * Existe separado de `useEmpresaActiva` porque un middleware NO puede usar
+ * `useRoute()`: allí devuelve la ruta que se abandona, no la de destino, y el
+ * slug saldría vacío justo cuando se navega hacia una empresa. El middleware
+ * pasa el slug de `to` y usa esto.
+ */
+export function empresaDeSlug(slug: string | undefined) {
+  const pertenencias = usePertenencias()
+  const empresaCore = useEmpresaCore()
+
+  const pertenencia = pertenencias.value.find(p => p.empresas?.slug === slug) ?? null
+
+  // Para todos, la empresa sale de su pertenencia. Para `morphos_core`, de la
+  // que cargó el middleware — solo si coincide con el slug pedido, para no
+  // arrastrar la empresa anterior mientras se navega a otra.
+  const empresa: Empresa | null = pertenencia?.empresas
+    ?? (empresaCore.value?.slug === slug ? empresaCore.value : null)
+
+  return { pertenencia, empresa, rol: pertenencia?.rol ?? null }
+}
+
 export function useEmpresaActiva() {
   const route = useRoute()
-  const pertenencias = usePertenencias()
 
   const slug = computed(() => {
     const value = route.params.slug
     return Array.isArray(value) ? value[0] : value
   })
 
-  const pertenencia = computed(
-    () => pertenencias.value.find(p => p.empresas?.slug === slug.value) ?? null,
-  )
+  const resuelta = computed(() => empresaDeSlug(slug.value))
 
   return {
     slug,
-    pertenencia,
-    empresa: computed(() => pertenencia.value?.empresas ?? null),
-    rol: computed<UserRole | null>(() => pertenencia.value?.rol ?? null),
-    bloqueada: computed(() => pertenencia.value?.empresas?.estado === 'bloqueada'),
+    pertenencia: computed(() => resuelta.value.pertenencia),
+    empresa: computed(() => resuelta.value.empresa),
+    rol: computed<UserRole | null>(() => resuelta.value.rol),
+    bloqueada: computed(() => resuelta.value.empresa?.estado === 'bloqueada'),
   }
 }
 

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { Empresa, Pertenencia, Usuario } from '#shared/types/database'
+import type { UsuarioConPertenencias } from '~/composables/useMorphos'
+import type { Empresa } from '#shared/types/database'
 
 definePageMeta({ layout: 'global', middleware: ['morphos-core'] })
 
@@ -8,33 +9,55 @@ const { t } = useI18n()
 
 useHead({ title: () => t('usuarios.titulo') })
 
-interface UsuarioConPertenencias extends Usuario {
-  pertenencias: (Pertenencia & { empresas: Empresa | null })[]
-}
-
 const busqueda = ref('')
 const error = ref('')
 
-const { data: usuarios, refresh } = await useAsyncData('global:usuarios', async () => {
-  const { data } = await db
-    .from('usuarios')
-    .select('*, pertenencias(*, empresas(*))')
-    .order('created_at', { ascending: false })
-  return (data ?? []) as unknown as UsuarioConPertenencias[]
+const { data, refresh } = await useAsyncData('global:usuarios', async () => {
+  const [usuarios, empresas] = await Promise.all([
+    db.from('usuarios').select('*, pertenencias(*, empresas(*))').order('created_at', { ascending: false }),
+    db.from('empresas').select('*').order('nombre'),
+  ])
+
+  return {
+    usuarios: (usuarios.data ?? []) as unknown as UsuarioConPertenencias[],
+    empresas: (empresas.data ?? []) as Empresa[],
+  }
 })
 
 const filtrados = computed(() => {
   const q = busqueda.value.trim().toLowerCase()
-  const lista = usuarios.value ?? []
+  const lista = data.value?.usuarios ?? []
   if (!q) return lista
   return lista.filter(
     u => u.nombre.toLowerCase().includes(q) || u.email.toLowerCase().includes(q),
   )
 })
 
+// --- Modal ------------------------------------------------------------------
+
+const modalAbierto = ref(false)
+const enEdicion = ref<UsuarioConPertenencias | null>(null)
+
+function editar(u: UsuarioConPertenencias) {
+  enEdicion.value = u
+  modalAbierto.value = true
+}
+
+function crear() {
+  enEdicion.value = null
+  modalAbierto.value = true
+}
+
+async function trasGuardar() {
+  error.value = ''
+  await refresh()
+}
+
+// --- Acciones rápidas -------------------------------------------------------
+
 /**
  * El trigger de base de datos rechaza asignar morphos_core a alguien con
- * pertenencias activas, y proteger la cuenta raíz (ADR-0002). Aquí solo
+ * pertenencias activas y proteger la cuenta raíz (ADR-0002). Aquí solo
  * anticipamos el error para no ofrecer una acción que va a fallar.
  */
 function puedeSerCore(u: UsuarioConPertenencias) {
@@ -43,11 +66,33 @@ function puedeSerCore(u: UsuarioConPertenencias) {
 
 async function alternarCore(u: UsuarioConPertenencias) {
   error.value = ''
-  const nuevo = u.rol_global === 'morphos_core' ? null : 'morphos_core'
+  const { error: err } = await db
+    .from('usuarios')
+    .update({ rol_global: u.rol_global === 'morphos_core' ? null : 'morphos_core' })
+    .eq('id', u.id)
+
+  if (err) {
+    error.value = err.message
+    return
+  }
+  await refresh()
+}
+
+/**
+ * Activa o desactiva la cuenta. Un usuario inactivo no entra al sistema: las
+ * políticas RLS dejan de devolverle nada (migración 0007) y el middleware le
+ * cierra la sesión. No es cosmético.
+ */
+async function alternarActivo(u: UsuarioConPertenencias) {
+  error.value = ''
+  const activar = !u.activo
 
   const { error: err } = await db
     .from('usuarios')
-    .update({ rol_global: nuevo })
+    .update({
+      activo: activar,
+      eliminado_en: activar ? null : new Date().toISOString(),
+    })
     .eq('id', u.id)
 
   if (err) {
@@ -85,6 +130,12 @@ async function desactivar(u: UsuarioConPertenencias) {
           icon="i-lucide-search"
           size="sm"
           :placeholder="$t('comun.buscar')"
+        />
+        <UButton
+          size="sm"
+          icon="i-lucide-user-plus"
+          :label="$t('usuarios.nuevo')"
+          @click="crear"
         />
       </template>
     </AppHeader>
@@ -187,6 +238,26 @@ async function desactivar(u: UsuarioConPertenencias) {
                     size="xs"
                     variant="ghost"
                     color="neutral"
+                    icon="i-lucide-pencil"
+                    :title="$t('usuarios.editar')"
+                    @click="editar(u)"
+                  />
+
+                  <!-- La cuenta raíz no se puede suspender (ADR-0002) -->
+                  <USwitch
+                    :model-value="u.activo"
+                    :disabled="u.es_raiz"
+                    size="sm"
+                    class="mx-1"
+                    :title="u.activo ? $t('usuarios.desactivarAyuda') : $t('usuarios.activarAyuda')"
+                    :aria-label="$t('usuarios.activo')"
+                    @update:model-value="alternarActivo(u)"
+                  />
+
+                  <UButton
+                    size="xs"
+                    variant="ghost"
+                    color="neutral"
                     :disabled="u.es_raiz || (!u.rol_global && !puedeSerCore(u))"
                     :icon="u.rol_global ? 'i-lucide-shield-off' : 'i-lucide-shield-plus'"
                     :title="$t('rol.morphos_core')"
@@ -208,5 +279,12 @@ async function desactivar(u: UsuarioConPertenencias) {
         </table>
       </div>
     </UCard>
+
+    <UsuarioModal
+      v-model:open="modalAbierto"
+      :usuario="enEdicion"
+      :empresas="data?.empresas ?? []"
+      @guardado="trasGuardar"
+    />
   </div>
 </template>

@@ -24,7 +24,8 @@
     "conGoogle": "Continue with Google",
     "oBien": "or",
     "error": "We couldn't sign you in",
-    "revisaCorreo": "Check your inbox to confirm access"
+    "revisaCorreo": "Check your inbox to confirm access",
+    "cuentaInactiva": "Your account is deactivated. Contact the MORPHOS team to regain access."
   },
   "empresa": {
     "selecciona": "Select a company",
@@ -128,6 +129,22 @@
     "titulo": "Full user management",
     "subtitulo": "Complete CRUD over every user in the system",
     "nuevo": "New user",
+    "nuevoAyuda": "The account is created already confirmed: they can sign in right away.",
+    "editar": "Edit user",
+    "emailFijo": "The email identifies the account and can't be changed here.",
+    "passwordInicial": "Initial password",
+    "roles": "System roles",
+    "rolesAyuda": "Pick one or more. Each role is held in a different company.",
+    "rolesPlaceholder": "No roles yet",
+    "coreExcluye": "MORPHOS Core is a global role: whoever holds it belongs to no company.",
+    "unaEmpresaPorRol": "Say which company each role applies to. A person can only hold one role per company.",
+    "sinRolesAun": "Pick roles above to assign companies",
+    "errorSinEmpresa": "Some role is missing its company",
+    "errorEmpresaDuplicada": "A person can't hold two roles in the same company",
+    "rolEnEmpresa": "Role",
+    "anadirEmpresa": "Add company",
+    "quitarEmpresa": "Remove from this company",
+    "errorNombre": "The name is required",
     "nombre": "Name",
     "email": "Email",
     "rolGlobal": "Global role",
@@ -139,7 +156,9 @@
     "excluyente": "morphos_core is exclusive: it cannot belong to any company.",
     "eliminar": "Delete",
     "eliminarLogico": "Deactivated, history preserved",
-    "sinPertenencias": "No memberships"
+    "sinPertenencias": "No memberships",
+    "activarAyuda": "Activate: they will be able to sign in again",
+    "desactivarAyuda": "Deactivate: they will no longer be able to sign in"
   },
   "empresas": {
     "titulo": "Company management",
@@ -152,7 +171,8 @@
     "entrar": "Manage company",
     "registrarPago": "Record payment",
     "darDeBaja": "Mark as churned",
-    "supervision": "Supervision"
+    "supervision": "Supervision",
+    "verFicha": "View details"
   },
   "egresos": {
     "titulo": "MORPHOS expenses",
@@ -230,5 +250,24 @@
     "horas": "h",
     "volver": "Back",
     "error": "Something went wrong"
+  },
+  "equipo": {
+    "nuevo": "Add person",
+    "nuevoAyuda": "If they already have a MORPHOS account, they're added to this company without creating another.",
+    "editar": "Edit in this company",
+    "ayuda": "Role, rate and balance belong to the membership in this company, not to the person. Changing them here doesn't affect the other companies they work for.",
+    "enLaEmpresa": "In the company",
+    "quitarAcceso": "Remove access to this company",
+    "darAcceso": "Grant access to this company",
+    "cuentaSuspendida": "account suspended in MORPHOS",
+    "emailExistente": "If they already have an account it's reused and no password is needed.",
+    "datosDeLaPersona": "Name and email belong to the person: only they or MORPHOS can change them.",
+    "passwordAyuda": "Only for a brand-new account. At least 8 characters.",
+    "tarifaAyuda": "Frozen into every block already checked in.",
+    "eliminar": "Remove from company",
+    "eliminarConfirmar": "{nombre} will no longer belong to {empresa} and will lose access to its data. This can't be undone.",
+    "eliminarNoBorraCuenta": "Their MORPHOS account is untouched: if they work for other companies, nothing changes there.",
+    "noBorrarOwner": "The owner can't be removed from here",
+    "conHistorial": "They have {n} check-ins on record: revoke access with the switch instead of deleting"
   }
 }

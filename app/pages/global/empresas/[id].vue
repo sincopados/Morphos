@@ -92,6 +92,21 @@ async function alternarSupervision() {
     >
       <template #acciones>
         <EstadoBadge :estado="data.empresa.estado" />
+        <UButton
+          size="sm"
+          variant="subtle"
+          icon="i-lucide-log-in"
+          :to="`/e/${data.empresa.slug}`"
+          :label="$t('empresas.entrar')"
+        />
+        <UButton
+          size="sm"
+          color="neutral"
+          variant="ghost"
+          icon="i-lucide-arrow-left"
+          to="/global/empresas"
+          :label="$t('comun.volver')"
+        />
       </template>
     </AppHeader>
 
