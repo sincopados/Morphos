@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(awk '/^  [^ ].*:$/{pkg=$1} /^      tslib: 2\\\\.8\\\\.1$/{print pkg}' pnpm-lock.yaml)",
+      "Bash(pnpm install *)",
+      "Bash(pnpm run *)",
+      "Bash(sh -c 'for i in $\\(seq 1 25\\); do grep -q \"Local:\" /tmp/claude-1000/-home-usurio-Documentos-Nuxt-Morphos/b2c5d0cb-7362-477b-9eb7-a3116d94ff7e/scratchpad/dev.log 2>/dev/null && break; sleep 2; done; cat /tmp/claude-1000/-home-usurio-Documentos-Nuxt-Morphos/b2c5d0cb-7362-477b-9eb7-a3116d94ff7e/scratchpad/dev.log')",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/)",
+      "Bash(curl -s http://localhost:3000/)"
+    ]
+  }
+}
