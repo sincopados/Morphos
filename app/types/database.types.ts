@@ -14,6 +14,62 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_work_sites: {
+        Row: {
+          assigned_by: string
+          company_id: string
+          created_at: string
+          id: string
+          member_id: string
+          work_site_id: string
+        }
+        Insert: {
+          assigned_by: string
+          company_id: string
+          created_at?: string
+          id?: string
+          member_id: string
+          work_site_id: string
+        }
+        Update: {
+          assigned_by?: string
+          company_id?: string
+          created_at?: string
+          id?: string
+          member_id?: string
+          work_site_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_work_sites_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "company_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "admin_work_sites_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "admin_work_sites_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "company_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "admin_work_sites_work_site_id_fkey"
+            columns: ["work_site_id"]
+            isOneToOne: false
+            referencedRelation: "work_sites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       assigned_shifts: {
         Row: {
           assigned_by: string
@@ -21,8 +77,8 @@ export type Database = {
           created_at: string
           id: string
           jornada_type: string
+          member_id: string
           shift_date: string
-          user_id: string
           work_site_id: string | null
         }
         Insert: {
@@ -31,8 +87,8 @@ export type Database = {
           created_at?: string
           id?: string
           jornada_type: string
+          member_id: string
           shift_date: string
-          user_id: string
           work_site_id?: string | null
         }
         Update: {
@@ -41,8 +97,8 @@ export type Database = {
           created_at?: string
           id?: string
           jornada_type?: string
+          member_id?: string
           shift_date?: string
-          user_id?: string
           work_site_id?: string | null
         }
         Relationships: [
@@ -50,7 +106,7 @@ export type Database = {
             foreignKeyName: "assigned_shifts_assigned_by_fkey"
             columns: ["assigned_by"]
             isOneToOne: false
-            referencedRelation: "users"
+            referencedRelation: "company_members"
             referencedColumns: ["id"]
           },
           {
@@ -61,10 +117,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "assigned_shifts_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: "assigned_shifts_member_id_fkey"
+            columns: ["member_id"]
             isOneToOne: false
-            referencedRelation: "users"
+            referencedRelation: "company_members"
             referencedColumns: ["id"]
           },
           {
@@ -90,7 +146,7 @@ export type Database = {
           created_at: string
           id: string
           ledger_entry_id: string
-          user_id: string
+          member_id: string
           work_site_id: string | null
         }
         Insert: {
@@ -106,7 +162,7 @@ export type Database = {
           created_at?: string
           id?: string
           ledger_entry_id: string
-          user_id: string
+          member_id: string
           work_site_id?: string | null
         }
         Update: {
@@ -122,7 +178,7 @@ export type Database = {
           created_at?: string
           id?: string
           ledger_entry_id?: string
-          user_id?: string
+          member_id?: string
           work_site_id?: string | null
         }
         Relationships: [
@@ -141,10 +197,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "checkin_events_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: "checkin_events_member_id_fkey"
+            columns: ["member_id"]
             isOneToOne: false
-            referencedRelation: "users"
+            referencedRelation: "company_members"
             referencedColumns: ["id"]
           },
           {
@@ -213,6 +269,69 @@ export type Database = {
         }
         Relationships: []
       }
+      company_members: {
+        Row: {
+          checkin_blocked: boolean
+          checkin_blocked_at: string | null
+          company_id: string
+          created_at: string
+          full_day_value: number | null
+          half_day_value: number | null
+          id: string
+          is_billing_owner: boolean
+          pay_period: string
+          profile_id: string
+          profile_type: string
+          role: string
+          status: string
+        }
+        Insert: {
+          checkin_blocked?: boolean
+          checkin_blocked_at?: string | null
+          company_id: string
+          created_at?: string
+          full_day_value?: number | null
+          half_day_value?: number | null
+          id?: string
+          is_billing_owner?: boolean
+          pay_period?: string
+          profile_id: string
+          profile_type: string
+          role: string
+          status?: string
+        }
+        Update: {
+          checkin_blocked?: boolean
+          checkin_blocked_at?: string | null
+          company_id?: string
+          created_at?: string
+          full_day_value?: number | null
+          half_day_value?: number | null
+          id?: string
+          is_billing_owner?: boolean
+          pay_period?: string
+          profile_id?: string
+          profile_type?: string
+          role?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_members_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "company_members_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       compliance_alerts: {
         Row: {
           acknowledged: boolean
@@ -221,10 +340,10 @@ export type Database = {
           id: string
           implied_hourly_rate: number | null
           ledger_entry_id: string | null
+          member_id: string
           rule_id: string
           shown_at: string | null
           shown_to: string | null
-          user_id: string
         }
         Insert: {
           acknowledged?: boolean
@@ -233,10 +352,10 @@ export type Database = {
           id?: string
           implied_hourly_rate?: number | null
           ledger_entry_id?: string | null
+          member_id: string
           rule_id: string
           shown_at?: string | null
           shown_to?: string | null
-          user_id: string
         }
         Update: {
           acknowledged?: boolean
@@ -245,10 +364,10 @@ export type Database = {
           id?: string
           implied_hourly_rate?: number | null
           ledger_entry_id?: string | null
+          member_id?: string
           rule_id?: string
           shown_at?: string | null
           shown_to?: string | null
-          user_id?: string
         }
         Relationships: [
           {
@@ -266,6 +385,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "compliance_alerts_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "company_members"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "compliance_alerts_rule_id_fkey"
             columns: ["rule_id"]
             isOneToOne: false
@@ -276,14 +402,7 @@ export type Database = {
             foreignKeyName: "compliance_alerts_shown_to_fkey"
             columns: ["shown_to"]
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "compliance_alerts_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
+            referencedRelation: "company_members"
             referencedColumns: ["id"]
           },
         ]
@@ -337,13 +456,15 @@ export type Database = {
           hours_reported: number | null
           id: string
           metadata: Json
-          origin_user_id: string
+          origin_member_id: string | null
+          origin_profile_id: string
           period_ref: string
           rejection_reason: string | null
           related_entry_id: string | null
           scope: string
           status: string
           type: string
+          work_site_id: string | null
         }
         Insert: {
           amount: number
@@ -354,13 +475,15 @@ export type Database = {
           hours_reported?: number | null
           id?: string
           metadata?: Json
-          origin_user_id: string
+          origin_member_id?: string | null
+          origin_profile_id: string
           period_ref: string
           rejection_reason?: string | null
           related_entry_id?: string | null
           scope: string
           status?: string
           type: string
+          work_site_id?: string | null
         }
         Update: {
           amount?: number
@@ -371,13 +494,15 @@ export type Database = {
           hours_reported?: number | null
           id?: string
           metadata?: Json
-          origin_user_id?: string
+          origin_member_id?: string | null
+          origin_profile_id?: string
           period_ref?: string
           rejection_reason?: string | null
           related_entry_id?: string | null
           scope?: string
           status?: string
           type?: string
+          work_site_id?: string | null
         }
         Relationships: [
           {
@@ -391,14 +516,21 @@ export type Database = {
             foreignKeyName: "ledger_entries_confirmed_by_fkey"
             columns: ["confirmed_by"]
             isOneToOne: false
-            referencedRelation: "users"
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ledger_entries_origin_user_id_fkey"
-            columns: ["origin_user_id"]
+            foreignKeyName: "ledger_entries_origin_member_id_fkey"
+            columns: ["origin_member_id"]
             isOneToOne: false
-            referencedRelation: "users"
+            referencedRelation: "company_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ledger_entries_origin_profile_id_fkey"
+            columns: ["origin_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
@@ -406,6 +538,13 @@ export type Database = {
             columns: ["related_entry_id"]
             isOneToOne: false
             referencedRelation: "ledger_entries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ledger_entries_work_site_id_fkey"
+            columns: ["work_site_id"]
+            isOneToOne: false
+            referencedRelation: "work_sites"
             referencedColumns: ["id"]
           },
         ]
@@ -452,7 +591,7 @@ export type Database = {
             foreignKeyName: "modification_requests_approved_by_fkey"
             columns: ["approved_by"]
             isOneToOne: false
-            referencedRelation: "users"
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
@@ -466,69 +605,37 @@ export type Database = {
             foreignKeyName: "modification_requests_requested_by_fkey"
             columns: ["requested_by"]
             isOneToOne: false
-            referencedRelation: "users"
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
       }
-      users: {
+      profiles: {
         Row: {
           auth_user_id: string | null
-          checkin_blocked: boolean
-          checkin_blocked_at: string | null
-          company_id: string | null
           created_at: string
           email: string | null
-          full_day_value: number | null
           full_name: string
-          half_day_value: number | null
           id: string
-          pay_period: string
-          profile_type: string
-          role: string
-          status: string
+          platform_role: string | null
         }
         Insert: {
           auth_user_id?: string | null
-          checkin_blocked?: boolean
-          checkin_blocked_at?: string | null
-          company_id?: string | null
           created_at?: string
           email?: string | null
-          full_day_value?: number | null
           full_name: string
-          half_day_value?: number | null
           id?: string
-          pay_period?: string
-          profile_type: string
-          role: string
-          status?: string
+          platform_role?: string | null
         }
         Update: {
           auth_user_id?: string | null
-          checkin_blocked?: boolean
-          checkin_blocked_at?: string | null
-          company_id?: string | null
           created_at?: string
           email?: string | null
-          full_day_value?: number | null
           full_name?: string
-          half_day_value?: number | null
           id?: string
-          pay_period?: string
-          profile_type?: string
-          role?: string
-          status?: string
+          platform_role?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "users_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       work_sites: {
         Row: {
@@ -573,13 +680,13 @@ export type Database = {
       }
     }
     Views: {
-      v_user_balance: {
+      v_member_balance: {
         Row: {
           company_id: string | null
           confirmed_balance: number | null
+          member_id: string | null
           pending_balance: number | null
           period_ref: string | null
-          user_id: string | null
         }
         Relationships: [
           {
@@ -590,10 +697,52 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ledger_entries_origin_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: "ledger_entries_origin_member_id_fkey"
+            columns: ["member_id"]
             isOneToOne: false
-            referencedRelation: "users"
+            referencedRelation: "company_members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v_company_overview: {
+        Row: {
+          active_members: number | null
+          active_work_sites: number | null
+          company_id: string | null
+          compliance_pending: boolean | null
+          created_at: string | null
+          jurisdiction: string | null
+          name: string | null
+          owners: number | null
+          pending_entries: number | null
+          plan: string | null
+          supervision_contracted: boolean | null
+          week_income: number | null
+        }
+        Relationships: []
+      }
+      v_work_site_totals: {
+        Row: {
+          company_id: string | null
+          income: number | null
+          labour_cost: number | null
+          period_ref: string | null
+          work_site_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ledger_entries_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ledger_entries_work_site_id_fkey"
+            columns: ["work_site_id"]
+            isOneToOne: false
+            referencedRelation: "work_sites"
             referencedColumns: ["id"]
           },
         ]
@@ -613,6 +762,27 @@ export type Database = {
           p_region: string
         }
         Returns: string
+      }
+      ensure_profile: { Args: never, Returns: string }
+      invite_team_member: {
+        Args: {
+          p_company_id: string
+          p_email: string
+          p_full_day_value?: number
+          p_full_name: string
+          p_half_day_value?: number
+          p_pay_period?: string
+          p_role: string
+        }
+        Returns: string
+      }
+      set_admin_work_sites: {
+        Args: { p_member_id: string, p_work_site_ids: string[] }
+        Returns: number
+      }
+      set_supervision_contracted: {
+        Args: { p_company_id: string, p_contracted: boolean }
+        Returns: boolean
       }
     }
     Enums: {

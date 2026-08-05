@@ -5,6 +5,7 @@ const { t } = useI18n()
 const localePath = useLocalePath()
 const user = useSupabaseUser()
 const redirect = useSupabaseCookieRedirect()
+const { load } = useAppUser()
 
 // El cliente de @supabase/ssr canjea el codigo de la URL por una sesion al
 // cargar, asi que aqui solo esperamos a que aparezca el usuario. Si no llega,
@@ -16,6 +17,9 @@ onMounted(() => {
     if (!value) return
     stop()
     clearTimeout(timer)
+    // Materializa el perfil antes de seguir: si alguien la invito antes de que
+    // se registrara, aqui es donde reclama esa invitacion y sus pertenencias.
+    await load(true)
     await navigateTo(redirect.pluck() || localePath('/'), { replace: true })
   }, { immediate: true })
 

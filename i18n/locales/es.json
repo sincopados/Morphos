@@ -63,5 +63,64 @@
       "rateLimit": "Demasiados intentos. Espera un momento y vuelve a probar.",
       "generic": "Algo salió mal. Vuelve a intentarlo."
     }
+  },
+  "roles": {
+    "owner": "Dueño",
+    "administrador": "Administrador",
+    "trabajador": "Trabajador",
+    "vendedor": "Vendedor",
+    "afiliado": "Afiliado",
+    "tutor": "Tutor",
+    "asesor": "Asesor",
+    "morphos_core": "MORPHOS Core"
+  },
+  "team": {
+    "title": "Equipo",
+    "description": "Equipo de {company}. El dueño da de alta a las personas y decide qué obras gestiona cada administrador.",
+    "invite": "Invitar a alguien",
+    "inviteDescription": "La persona recibe acceso al entrar con este correo.",
+    "loading": "Cargando equipo…",
+    "noEmail": "Sin correo",
+    "noSites": "Sin obras asignadas",
+    "assignSites": "Obras que gestiona",
+    "pendingInvite": "Invitación pendiente",
+    "blocked": "Check-in bloqueado",
+    "inactive": "Inactivo",
+    "unblock": "Desbloquear",
+    "deactivate": "Desactivar",
+    "activate": "Reactivar",
+    "fields": {
+      "fullName": "Nombre completo",
+      "role": "Rol",
+      "emailHint": "Si ya usa MORPHOS en otra empresa, se reutiliza su cuenta"
+    },
+    "validation": {
+      "fullName": "Escribe el nombre completo"
+    },
+    "switch": "Cambiar de empresa"
+  },
+  "morphos": {
+    "title": "Panel de sistema",
+    "description": "Vista de MORPHOS sobre todas las empresas del sistema. Solo para el equipo interno.",
+    "companies": "Empresas",
+    "loading": "Cargando empresas…",
+    "empty": "Todavía no hay ninguna empresa registrada.",
+    "manage": "Gestionar",
+    "supervised": "Supervisión contratada",
+    "contractSupervision": "Contratar supervisión",
+    "cancelSupervision": "Cancelar supervisión",
+    "compliancePending": "Sin reglas de compliance",
+    "membersCount": "{n} personas",
+    "sitesCount": "{n} obras",
+    "pending": "{n} por confirmar",
+    "supervisionNote": "MORPHOS solo puede confirmar movimientos en las empresas que tienen la supervisión contratada. El resto de la gestión no depende de eso.",
+    "stats": {
+      "companies": "Empresas",
+      "members": "Personas activas",
+      "workSites": "Obras activas",
+      "pendingEntries": "Movimientos por confirmar",
+      "weekIncome": "Generado esta semana",
+      "supervised": "Con supervisión contratada"
+    }
   }
 }
