@@ -1,3 +1,11 @@
+import { createRequire } from 'node:module'
+
+// @supabase/* importa tslib; sin este alias el bundler resuelve la build
+// CJS y el prerender falla con
+// "Cannot destructure property '__extends' of '__toESM(...).default'".
+// Se resuelve a ruta absoluta para que el alias no se reaplique en bucle.
+const tslibEsm = createRequire(import.meta.url).resolve('tslib/tslib.es6.mjs')
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   modules: [
@@ -13,8 +21,27 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/main.css'],
 
+  runtimeConfig: {
+    public: {
+      // El boton de Google solo se muestra cuando el proveedor esta habilitado
+      // en el dashboard de Supabase; si no, `signInWithOAuth` manda al usuario
+      // a una pagina de error del propio Supabase.
+      googleAuthEnabled: false
+    }
+  },
+
   routeRules: {
     '/': { prerender: true }
+  },
+
+  alias: {
+    tslib: tslibEsm
+  },
+
+  nitro: {
+    alias: {
+      tslib: tslibEsm
+    }
   },
 
   compatibilityDate: '2026-06-30',
@@ -29,6 +56,9 @@ export default defineNuxtConfig({
   },
 
   i18n: {
+    // Necesario para que los enlaces SEO (canonical/alternate) salgan con
+    // dominio absoluto. En produccion se define via NUXT_PUBLIC_SITE_URL.
+    baseUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000',
     defaultLocale: 'es',
     locales: [
       { code: 'es', language: 'es-ES', name: 'Español', file: 'es.json' },
@@ -41,7 +71,19 @@ export default defineNuxtConfig({
     redirectOptions: {
       login: '/login',
       callback: '/confirm',
-      exclude: ['/*']
+      // El guard compara `to.path` exacto contra estos patrones, y `login` y
+      // `callback` ya quedan excluidos por su cuenta. Como i18n usa
+      // `prefix_except_default`, cada ruta publica necesita tambien su
+      // variante con prefijo: un patron amplio como `/en/*` dejaria sin
+      // proteger toda la app en ingles.
+      exclude: [
+        '/',
+        '/registro',
+        '/en',
+        '/en/login',
+        '/en/registro',
+        '/en/confirm'
+      ]
     }
   }
 })

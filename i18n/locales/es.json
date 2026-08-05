@@ -1,9 +1,67 @@
 {
   "app": {
-    "name": "MORPHOS"
+    "name": "MORPHOS",
+    "tagline": "Construye. Automatiza. Escala."
   },
   "home": {
     "title": "MORPHOS",
     "description": "Motor de saldo y confirmación para personal, ventas y afiliados."
+  },
+  "dashboard": {
+    "title": "Panel",
+    "signedInAs": "Sesión iniciada como {email}",
+    "placeholder": "Todavía no hay nada aquí: el onboarding y la bandeja de pendientes llegan en el siguiente hito."
+  },
+  "auth": {
+    "login": {
+      "title": "Inicia sesión",
+      "description": "Entra a tu cuenta de MORPHOS.",
+      "submit": "Entrar",
+      "noAccount": "¿Todavía no tienes cuenta?",
+      "createAccount": "Crear cuenta"
+    },
+    "register": {
+      "title": "Crea tu cuenta",
+      "description": "Empieza a gestionar tu equipo, tus ventas y tus afiliados.",
+      "submit": "Crear cuenta",
+      "hasAccount": "¿Ya tienes cuenta?",
+      "signIn": "Inicia sesión",
+      "checkEmailTitle": "Revisa tu correo",
+      "checkEmailBody": "Te enviamos un enlace de confirmación a {email}. Ábrelo para activar tu cuenta."
+    },
+    "fields": {
+      "companyName": "Nombre de la empresa",
+      "companyNamePlaceholder": "SmartPainting",
+      "email": "Correo",
+      "emailPlaceholder": "tu{'@'}empresa.com",
+      "password": "Contraseña",
+      "passwordPlaceholder": "Mínimo 8 caracteres",
+      "referralCode": "Código de referido",
+      "referralCodePlaceholder": "Si alguien te invitó",
+      "optional": "Opcional"
+    },
+    "google": "Continuar con Google",
+    "googleDisabled": "Google todavía no está habilitado en este proyecto.",
+    "separator": "o",
+    "signOut": "Cerrar sesión",
+    "confirm": {
+      "verifying": "Confirmando tu sesión…",
+      "failed": "No pudimos confirmar tu sesión. Intenta iniciar sesión de nuevo.",
+      "backToLogin": "Volver a iniciar sesión"
+    },
+    "validation": {
+      "companyName": "Escribe el nombre de tu empresa.",
+      "email": "Escribe un correo válido.",
+      "passwordMin": "La contraseña debe tener al menos 8 caracteres."
+    },
+    "errors": {
+      "invalidCredentials": "Correo o contraseña incorrectos.",
+      "emailNotConfirmed": "Todavía no confirmaste tu correo. Revisa tu bandeja de entrada.",
+      "userExists": "Ya existe una cuenta con ese correo.",
+      "weakPassword": "Esa contraseña es demasiado débil. Usa una más larga.",
+      "invalidEmail": "Ese correo no es válido.",
+      "rateLimit": "Demasiados intentos. Espera un momento y vuelve a probar.",
+      "generic": "Algo salió mal. Vuelve a intentarlo."
+    }
   }
 }
