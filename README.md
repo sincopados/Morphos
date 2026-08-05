@@ -20,9 +20,16 @@ dinero de una obra. Los glosarios están en [contexts/](./contexts/).
 
 ```bash
 pnpm install
-cp .env.example .env      # rellena SUPABASE_URL y SUPABASE_KEY
+cp .env.example .env      # rellena las tres claves
 pnpm dev
 ```
+
+`NUXT_PUBLIC_SUPABASE_URL` y `NUXT_PUBLIC_SUPABASE_KEY` son obligatorias.
+`SUPABASE_SERVICE_KEY` solo hace falta para **crear usuarios** desde el
+Dashboard Global: es la única operación que necesita privilegios de
+administración, vive en [server/api/global/usuarios.post.ts](./server/api/global/usuarios.post.ts)
+y nunca sale al navegador. Sin ella el alta responde 501 y el resto de la
+aplicación funciona con normalidad.
 
 ### Base de datos
 

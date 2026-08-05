@@ -3,14 +3,45 @@
 -- Pégalo tal cual en el SQL Editor de Supabase. Crea también las cuentas de
 -- `auth.users`, así que no hay nada previo que preparar ni UUID que sustituir.
 --
+-- REINSTALABLE: se puede ejecutar tantas veces como haga falta. Empieza
+-- borrando los datos de ejemplo que crea, así que no acumula duplicados ni
+-- falla por el `slug` único de las empresas.
+--
 -- Cuentas que deja creadas, todas con contraseña `MorphosDemo2026!`:
 --
---   core@morphos.demo   morphos_core y cuenta raíz
---   duena@morphos.demo  dueña de las dos empresas de ejemplo
---   curra@morphos.demo  trabajadora con check-in en Constructora Sur
+--   morphossystem@gmail.com  morphos_core y cuenta raíz
+--   duena@morphos.demo       dueña de las dos empresas de ejemplo
+--   curra@morphos.demo       trabajadora con check-in en Constructora Sur
 --
--- Es idempotente en las cuentas (no las duplica), pero NO en los datos de
--- negocio: ejecutarlo dos veces falla por el `slug` único de las empresas.
+-- AVISO: esa contraseña está en el repositorio. La cuenta raíz manda sobre todo
+-- el sistema: entra en /perfil y cámbiala antes de nada.
+
+-- ---------------------------------------------------------------------------
+-- 0. Limpieza — lo que hace reinstalable al seed
+-- ---------------------------------------------------------------------------
+
+do $$
+begin
+  -- La cuenta raíz es intocable por diseño (ADR-0002). Desactivar el trigger es
+  -- la vía de administración prevista para casos como este.
+  alter table usuarios disable trigger usuarios_raiz_intocable;
+
+  -- Borra en cascada pertenencias, obras, bloques, cobros e incidencias.
+  delete from empresas where slug in ('constructora-sur', 'nova-reformas');
+
+  -- Los egresos no cuelgan de ninguna empresa: se borran por concepto para no
+  -- tocar los que hayas dado de alta tú. La comparación ignora tildes y
+  -- mayúsculas: si no, un "Nomina" sin tilde sobrevive y luego impide borrar
+  -- la cuenta que lo registró, por la clave foránea.
+  delete from egresos_morphos
+  where translate(lower(concepto), 'áéíóúü', 'aeiouu')
+    in ('supabase pro', 'dominio y correo', 'nomina interna');
+
+  -- Cuenta de demostración retirada: su contraseña es pública y era raíz.
+  delete from auth.users where email = 'core@morphos.demo';
+
+  alter table usuarios enable trigger usuarios_raiz_intocable;
+end $$;
 
 -- ---------------------------------------------------------------------------
 -- 1. Cuentas de autenticación
@@ -19,7 +50,7 @@
 do $$
 declare
   pw      text   := 'MorphosDemo2026!';
-  cuentas text[] := array['core@morphos.demo', 'duena@morphos.demo', 'curra@morphos.demo'];
+  cuentas text[] := array['morphossystem@gmail.com', 'duena@morphos.demo', 'curra@morphos.demo'];
   nombres text[] := array['MORPHOS Core', 'Marta Ruiz', 'Eva Bergara'];
   uid uuid;
   i   int;
@@ -69,16 +100,20 @@ declare
   id_raiz uuid; id_duena uuid; id_curra uuid;
   id_sur uuid; id_nova uuid; id_pert uuid; id_obra uuid; id_cli uuid;
 begin
-  select id into id_raiz  from auth.users where email = 'core@morphos.demo';
+  select id into id_raiz  from auth.users where email = 'morphossystem@gmail.com';
   select id into id_duena from auth.users where email = 'duena@morphos.demo';
   select id into id_curra from auth.users where email = 'curra@morphos.demo';
+
+  if id_raiz is null or id_duena is null or id_curra is null then
+    raise exception 'Falta alguna de las cuentas: revisa la sección 1';
+  end if;
 
   -- El trigger on_auth_user_created ya creó las filas en `usuarios`; esto es
   -- solo por si las cuentas son anteriores a la migración.
   insert into usuarios (id, email, nombre)
-  values (id_raiz,  'core@morphos.demo',  'MORPHOS Core'),
-         (id_duena, 'duena@morphos.demo', 'Marta Ruiz'),
-         (id_curra, 'curra@morphos.demo', 'Eva Bergara')
+  values (id_raiz,  'morphossystem@gmail.com', 'MORPHOS Core'),
+         (id_duena, 'duena@morphos.demo',      'Marta Ruiz'),
+         (id_curra, 'curra@morphos.demo',      'Eva Bergara')
   on conflict (id) do nothing;
 
   -- Rol global, excluyente y sin pertenencias (ADR-0002).

@@ -24,7 +24,8 @@
     "conGoogle": "Continuar con Google",
     "oBien": "o bien",
     "error": "No hemos podido iniciar sesión",
-    "revisaCorreo": "Revisa tu correo para confirmar el acceso"
+    "revisaCorreo": "Revisa tu correo para confirmar el acceso",
+    "cuentaInactiva": "Tu cuenta está desactivada. Contacta con el equipo de MORPHOS para recuperar el acceso."
   },
   "empresa": {
     "selecciona": "Selecciona una empresa",
@@ -128,12 +129,30 @@
     "titulo": "Gestión total de usuarios",
     "subtitulo": "CRUD completo sobre todos los usuarios del sistema",
     "nuevo": "Nuevo usuario",
+    "nuevoAyuda": "Se crea la cuenta ya confirmada: podrá entrar de inmediato.",
+    "editar": "Editar usuario",
+    "emailFijo": "El correo identifica la cuenta y no se puede cambiar desde aquí.",
+    "passwordInicial": "Contraseña inicial",
+    "roles": "Roles en el sistema",
+    "rolesAyuda": "Elige uno o varios. Cada rol se ejerce en una empresa distinta.",
+    "rolesPlaceholder": "Sin roles todavía",
+    "coreExcluye": "MORPHOS Core es un rol global: quien lo tiene no pertenece a ninguna empresa.",
+    "unaEmpresaPorRol": "Indica en qué empresa ejerce cada rol. Una persona solo puede tener un rol por empresa.",
+    "sinRolesAun": "Elige arriba los roles para asignarle empresas",
+    "errorSinEmpresa": "Falta indicar la empresa de algún rol",
+    "errorEmpresaDuplicada": "No se puede tener dos roles en la misma empresa",
+    "rolEnEmpresa": "Rol",
+    "anadirEmpresa": "Añadir empresa",
+    "quitarEmpresa": "Quitar de esta empresa",
+    "errorNombre": "El nombre es obligatorio",
     "nombre": "Nombre",
     "email": "Correo",
     "rolGlobal": "Rol global",
     "pertenencias": "Pertenencias",
     "tarifa": "Tarifa/h",
     "activo": "Activo",
+    "activarAyuda": "Activar: podrá volver a entrar al sistema",
+    "desactivarAyuda": "Desactivar: dejará de poder entrar al sistema",
     "raiz": "Cuenta raíz",
     "raizProtegida": "La cuenta raíz no se puede eliminar ni degradar.",
     "excluyente": "morphos_core es excluyente: no puede pertenecer a ninguna empresa.",
@@ -152,7 +171,8 @@
     "entrar": "Entrar a gestionar",
     "registrarPago": "Registrar pago",
     "darDeBaja": "Dar de baja",
-    "supervision": "Supervisión"
+    "supervision": "Supervisión",
+    "verFicha": "Ver ficha"
   },
   "egresos": {
     "titulo": "Egresos de MORPHOS",
@@ -230,5 +250,24 @@
     "horas": "h",
     "volver": "Volver",
     "error": "Algo ha ido mal"
+  },
+  "equipo": {
+    "nuevo": "Añadir persona",
+    "nuevoAyuda": "Si ya tiene cuenta en MORPHOS, se le añade a esta empresa sin crear otra.",
+    "editar": "Editar en esta empresa",
+    "ayuda": "El rol, la tarifa y el saldo son de la pertenencia a esta empresa, no de la persona. Cambiarlos aquí no afecta a las demás empresas para las que trabaje.",
+    "enLaEmpresa": "En la empresa",
+    "quitarAcceso": "Quitar el acceso a esta empresa",
+    "darAcceso": "Dar acceso a esta empresa",
+    "cuentaSuspendida": "cuenta suspendida en MORPHOS",
+    "emailExistente": "Si ya tiene cuenta, se reutiliza y no hace falta contraseña.",
+    "datosDeLaPersona": "El nombre y el correo son de la persona: solo los cambia ella o MORPHOS.",
+    "passwordAyuda": "Solo si es una cuenta nueva. Mínimo 8 caracteres.",
+    "tarifaAyuda": "Se congela en cada bloque ya fichado.",
+    "eliminar": "Quitar de la empresa",
+    "eliminarConfirmar": "{nombre} dejará de pertenecer a {empresa} y perderá el acceso a sus datos. No se puede deshacer.",
+    "eliminarNoBorraCuenta": "Su cuenta de MORPHOS no se toca: si trabaja para otras empresas, sigue igual en ellas.",
+    "noBorrarOwner": "Al dueño no se le puede quitar desde aquí",
+    "conHistorial": "Tiene {n} fichajes registrados: quítale el acceso con el interruptor en vez de borrarlo"
   }
 }

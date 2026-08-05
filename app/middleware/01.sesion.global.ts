@@ -29,6 +29,17 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   usuario.value = (fila as Usuario | null) ?? null
 
+  // Cuenta desactivada: fuera del sistema. Las políticas RLS ya no le devuelven
+  // nada (migración 0007), así que sin esto vería pantallas vacías sin saber
+  // por qué. Se cierra la sesión para que no quede a medias.
+  if (usuario.value && !usuario.value.activo) {
+    const supabase = useSupabaseClient()
+    await supabase.auth.signOut()
+    usuario.value = null
+    pertenencias.value = []
+    return navigateTo('/login?estado=inactivo')
+  }
+
   // morphos_core es excluyente: no tiene pertenencias que cargar (ADR-0002).
   if (usuario.value?.rol_global === 'morphos_core') {
     pertenencias.value = []

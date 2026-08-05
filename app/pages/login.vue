@@ -10,6 +10,9 @@ const cargando = ref(false)
 const error = ref('')
 const aviso = ref('')
 
+// El middleware manda aquí a quien tenga la cuenta desactivada.
+const inactivo = computed(() => useRoute().query.estado === 'inactivo')
+
 useHead({ title: () => t('auth.entrar') })
 
 async function conPassword() {
@@ -85,6 +88,16 @@ async function conGoogle() {
           />
         </UFormField>
 
+        <p
+          v-if="inactivo"
+          class="flex items-start gap-2 rounded-lg bg-warning/10 px-3 py-2 text-sm text-warning"
+        >
+          <UIcon
+            name="i-lucide-user-x"
+            class="mt-0.5 size-4 shrink-0"
+          />
+          {{ $t('auth.cuentaInactiva') }}
+        </p>
         <p
           v-if="error"
           class="rounded-lg bg-error/10 px-3 py-2 text-sm text-error"

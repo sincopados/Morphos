@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const { slug, empresa, rol } = useEmpresaActiva()
 const gestiona = useGestionaEmpresa()
+const esCore = useEsMorphosCore()
 const { t } = useI18n()
 
 const enlaces = computed(() => {
@@ -10,7 +11,7 @@ const enlaces = computed(() => {
   const items = [
     { label: t('nav.dashboard'), icon: 'i-lucide-layout-dashboard', to: base, visible: gestiona.value },
     { label: t('nav.obras'), icon: 'i-lucide-hammer', to: `${base}/obras`, visible: gestiona.value },
-    { label: t('nav.equipo'), icon: 'i-lucide-users', to: `${base}/equipo`, visible: rol.value === 'owner' },
+    { label: t('nav.equipo'), icon: 'i-lucide-users', to: `${base}/equipo`, visible: rol.value === 'owner' || esCore.value },
     { label: t('nav.miSaldo'), icon: 'i-lucide-wallet', to: `${base}/saldo`, visible: !gestiona.value },
     { label: t('nav.soporte'), icon: 'i-lucide-life-buoy', to: `${base}/soporte`, visible: true },
   ]
@@ -26,22 +27,24 @@ const enlaces = computed(() => {
         v-if="empresa"
         class="hidden w-56 shrink-0 flex-col gap-4 lg:flex"
       >
+        <!-- morphos_core llega desde el Dashboard Global, no desde el selector -->
         <NuxtLink
-          to="/empresas"
+          :to="esCore ? '/global/empresas' : '/empresas'"
           class="group rounded-xl border border-default p-3 transition-colors hover:border-primary/50"
+          :class="esCore ? 'border-primary/40 bg-primary/5' : ''"
         >
           <p class="text-[0.65rem] font-medium uppercase tracking-widest text-primary">
-            MORPHOS
+            {{ esCore ? $t('rol.morphos_core') : 'MORPHOS' }}
           </p>
           <p class="mt-1 truncate font-medium">
             {{ empresa.nombre }}
           </p>
           <p class="mt-1 flex items-center gap-1 text-xs text-dimmed">
             <UIcon
-              name="i-lucide-repeat"
+              :name="esCore ? 'i-lucide-arrow-left' : 'i-lucide-repeat'"
               class="size-3"
             />
-            {{ $t('nav.cambiarEmpresa') }}
+            {{ esCore ? $t('empresas.titulo') : $t('nav.cambiarEmpresa') }}
           </p>
         </NuxtLink>
 

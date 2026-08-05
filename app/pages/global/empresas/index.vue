@@ -110,13 +110,25 @@ const filtradas = computed(() => {
                   class="size-4 text-success"
                 />
               </td>
-              <td class="py-2 text-right">
-                <UButton
-                  size="xs"
-                  variant="subtle"
-                  :to="`/global/empresas/${e.id}`"
-                  :label="$t('empresas.entrar')"
-                />
+              <td class="py-2">
+                <div class="flex justify-end gap-1">
+                  <UButton
+                    size="xs"
+                    variant="ghost"
+                    color="neutral"
+                    icon="i-lucide-file-text"
+                    :to="`/global/empresas/${e.id}`"
+                    :label="$t('empresas.verFicha')"
+                  />
+                  <!-- Entrar = operar la empresa con las pantallas normales -->
+                  <UButton
+                    size="xs"
+                    variant="subtle"
+                    icon="i-lucide-log-in"
+                    :to="`/e/${e.slug}`"
+                    :label="$t('empresas.entrar')"
+                  />
+                </div>
               </td>
             </tr>
           </tbody>
