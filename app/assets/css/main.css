@@ -1,0 +1,20 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+@theme static {
+  /* Identidad de marca — docs/spec/00-vision.md */
+  --color-morphos-50: #e6fbff;
+  --color-morphos-100: #b8f4ff;
+  --color-morphos-200: #7aeaff;
+  --color-morphos-300: #3ddfff;
+  --color-morphos-400: #00d4ff;
+  --color-morphos-500: #00b8de;
+  --color-morphos-600: #009bbb;
+  --color-morphos-700: #007894;
+  --color-morphos-800: #00566b;
+  --color-morphos-900: #003a48;
+  --color-morphos-950: #001f26;
+
+  --color-sistema: #f5f5f5;
+  --color-profundo: #0d0d0d;
+}

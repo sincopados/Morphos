@@ -1,0 +1,234 @@
+{
+  "app": {
+    "name": "MORPHOS",
+    "tagline": "Digital brains that learn, mutate and evolve."
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "obras": "Jobs",
+    "equipo": "Team",
+    "miSaldo": "My balance",
+    "soporte": "Support",
+    "global": "Global Dashboard",
+    "usuarios": "Users",
+    "empresas": "Companies",
+    "egresos": "Expenses",
+    "salir": "Sign out",
+    "idioma": "Language",
+    "cambiarEmpresa": "Switch company"
+  },
+  "auth": {
+    "entrar": "Sign in",
+    "email": "Email",
+    "password": "Password",
+    "conGoogle": "Continue with Google",
+    "oBien": "or",
+    "error": "We couldn't sign you in",
+    "revisaCorreo": "Check your inbox to confirm access"
+  },
+  "empresa": {
+    "selecciona": "Select a company",
+    "sinEmpresas": "You don't belong to any company yet",
+    "estado": {
+      "activa": "Active",
+      "bloqueada": "Blocked",
+      "dada_de_baja": "Churned"
+    }
+  },
+  "dashboard": {
+    "titulo": "Company dashboard",
+    "generadoSemana": "Generated this week",
+    "vsSemanaAnterior": "vs. last week",
+    "cobrosGenerales": "Total payments received",
+    "gastosGenerales": "Total expenses",
+    "cobrosPorObra": "Payments by job",
+    "gastosPorObra": "Expenses by job",
+    "tareasPendientes": "Open tasks by job",
+    "margen": "Margin",
+    "periodo": "Period",
+    "semana": "Current week",
+    "mes": "Current month",
+    "soloConfirmados": "Only confirmed records are counted.",
+    "sinDatos": "No movements in this period"
+  },
+  "obra": {
+    "titulo": "Jobs",
+    "numero": "No.",
+    "cliente": "Client",
+    "estadoLabel": "Status",
+    "tareasAbiertas": "Open tasks",
+    "vencidas": "overdue",
+    "ingresos": "Revenue",
+    "coste": "Cost",
+    "beneficio": "Profit",
+    "manoObra": "Labor",
+    "gastos": "Expenses",
+    "lineas": "Product / Service",
+    "manoObraDerivada": "Labor is derived from check-ins. Hours are never entered by hand.",
+    "sinObras": "This company has no jobs yet",
+    "estado": {
+      "borrador": "Draft",
+      "activa": "Active",
+      "atrasada": "Overdue",
+      "completada": "Completed",
+      "cerrada": "Closed",
+      "archivada": "Archived"
+    }
+  },
+  "rol": {
+    "owner": "Owner",
+    "administrador": "Administrator",
+    "trabajador": "Worker",
+    "vendedor": "Salesperson",
+    "afiliado": "Affiliate",
+    "morphos_core": "MORPHOS Core"
+  },
+  "saldo": {
+    "titulo": "My balance",
+    "acumulado": "Accrued balance",
+    "horasConfirmadas": "Confirmed hours",
+    "pendienteAprobacion": "Awaiting approval",
+    "explicacion": "Your balance belongs to your membership in this company. Switching companies changes it entirely.",
+    "sinRegistros": "You have no records in this company yet"
+  },
+  "bloqueo": {
+    "titulo": "Renew your membership",
+    "descripcion": "{empresa}'s membership expired on {fecha}. Your data is intact and everything returns as soon as the payment is recorded.",
+    "pagar": "Pay now",
+    "problema": "I have a problem with the payment",
+    "problemaEnviado": "We opened a high-priority ticket. The MORPHOS team will contact you.",
+    "soloSaldo": "Your company is blocked. You can view your balance, but not record anything new."
+  },
+  "global": {
+    "titulo": "Global Dashboard",
+    "subtitulo": "System-wide infrastructure and structure",
+    "empresasActivas": "Active companies",
+    "empresasBloqueadas": "Blocked companies",
+    "dadasDeBaja": "Churned",
+    "recaudoMembresias": "Membership revenue",
+    "pagas": "Paid",
+    "proximasAVencer": "Expiring soon",
+    "sinMora": "Prepaid model: there are no overdue memberships.",
+    "recaudoMensual": "Monthly revenue",
+    "ingresos": "Income",
+    "egresos": "Expenses",
+    "neto": "Net for the month",
+    "vsMesAnterior": "vs. last month",
+    "alertasSoporte": "Support alerts",
+    "alertasCobro": "Billing alerts",
+    "resumen": "System summary",
+    "personasActivas": "Active people",
+    "obrasActivas": "Active jobs",
+    "movimientosPendientes": "Unconfirmed movements",
+    "supervisionContratada": "With contracted supervision",
+    "venceEnDias": "Expires in {dias} days",
+    "sinAlertas": "Nothing pending"
+  },
+  "usuarios": {
+    "titulo": "Full user management",
+    "subtitulo": "Complete CRUD over every user in the system",
+    "nuevo": "New user",
+    "nombre": "Name",
+    "email": "Email",
+    "rolGlobal": "Global role",
+    "pertenencias": "Memberships",
+    "tarifa": "Rate/h",
+    "activo": "Active",
+    "raiz": "Root account",
+    "raizProtegida": "The root account cannot be deleted or demoted.",
+    "excluyente": "morphos_core is exclusive: it cannot belong to any company.",
+    "eliminar": "Delete",
+    "eliminarLogico": "Deactivated, history preserved",
+    "sinPertenencias": "No memberships"
+  },
+  "empresas": {
+    "titulo": "Company management",
+    "nombre": "Name",
+    "equipo": "Team",
+    "obras": "Jobs",
+    "vence": "Expires",
+    "compliance": "Compliance",
+    "faltaCompliance": "Rules missing",
+    "entrar": "Manage company",
+    "registrarPago": "Record payment",
+    "darDeBaja": "Mark as churned",
+    "supervision": "Supervision"
+  },
+  "egresos": {
+    "titulo": "MORPHOS expenses",
+    "nuevo": "New expense",
+    "concepto": "Description",
+    "categoria": "Category",
+    "importe": "Amount",
+    "fecha": "Date",
+    "cat": {
+      "infraestructura": "Infrastructure",
+      "nomina": "Internal payroll",
+      "proveedores": "Vendors",
+      "comisiones": "Commissions",
+      "otros": "Other"
+    }
+  },
+  "soporte": {
+    "titulo": "Support",
+    "nueva": "New ticket",
+    "asunto": "Subject",
+    "prioridad": "Priority",
+    "responsable": "Assignee",
+    "antiguedad": "Age",
+    "cerrar": "Close",
+    "sinIncidencias": "No open tickets",
+    "abiertaPor": "Opened by",
+    "prio": {
+      "baja": "Low",
+      "media": "Medium",
+      "alta": "High"
+    },
+    "tipo": {
+      "pago": "Payment",
+      "saldo": "Balance",
+      "datos": "Data",
+      "tecnico": "Technical",
+      "otro": "Other"
+    }
+  },
+  "perfil": {
+    "titulo": "My profile",
+    "datos": "Personal details",
+    "avatar": "Profile picture",
+    "avatarAyuda": "Link to an image. Leave empty to use your initials.",
+    "emailBloqueado": "Your email identifies your account and only the MORPHOS team can change it.",
+    "guardado": "Details updated",
+    "password": "Password",
+    "actual": "Current password",
+    "nueva": "New password",
+    "repetir": "Repeat the new password",
+    "minimo": "At least {min} characters.",
+    "cambiarPassword": "Change password",
+    "passwordCambiada": "Password changed",
+    "errorActual": "Your current password is not correct",
+    "errorCorta": "The password must be at least {min} characters long",
+    "errorNoCoincide": "The two passwords don't match",
+    "pertenenciasAyuda": "Your role, rate and balance belong to each membership, not to you as a person.",
+    "coreSinEmpresas": "As MORPHOS Core you belong to no company: your scope is the whole system."
+  },
+  "tema": {
+    "titulo": "Appearance",
+    "claro": "Light",
+    "oscuro": "Dark",
+    "sistema": "System"
+  },
+  "comun": {
+    "guardar": "Save",
+    "cancelar": "Cancel",
+    "crear": "Create",
+    "buscar": "Search",
+    "acciones": "Actions",
+    "cargando": "Loading…",
+    "total": "Total",
+    "dias": "days",
+    "horas": "h",
+    "volver": "Back",
+    "error": "Something went wrong"
+  }
+}
